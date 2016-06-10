@@ -4,12 +4,13 @@ import (
 	"bufio"
 	"flag"
 	//	"fmt"
-	"gopkg.in/mgo.v2"
 	"log"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+	"gopkg.in/mgo.v2"
+	"github.com/magleff/gobro/dbsession"
 )
 
 type Entry struct {
@@ -40,21 +41,6 @@ func processLine(line string) Entry {
 	return Entry{parseTime(fields[0]), fields[1], parseAmount(fields[2])}
 }
 
-// As seen in http://blog.mongodb.org/post/80579086742/running-mongodb-queries-concurrently-with-go
-func createDBSession() *mgo.Session {
-	mongoDBDialInfo := &mgo.DialInfo{
-		Addrs:    []string{"localhost:27017"},
-		Timeout:  60 * time.Second,
-		Database: "expenses-analyzer"}
-	// Create a session which maintains a pool of socket connections
-	// to our MongoDB.
-	mongoSession, err := mgo.DialWithInfo(mongoDBDialInfo)
-	if err != nil {
-		log.Fatalf("CreateSession: %s\n", err)
-	}
-	return mongoSession
-}
-
 func importEntriesIntoDB(mongoSession *mgo.Session, entries []Entry) {
 	expenses := mongoSession.DB("").C("expenses")
 	for _, entry := range entries {
@@ -74,7 +60,7 @@ func processFile(file *os.File) {
 		countLine++
 	}
 
-	mongoSession := createDBSession()
+	mongoSession := dbsession.Create()
 
 	importEntriesIntoDB(mongoSession, entries)
 
