@@ -1,27 +1,28 @@
 package main
 
 import (
-    "bufio"
-    "os"
-    "fmt"
-    "log"
-    "strings"
-    "time"
-    "strconv"
-    "flag"
+	"bufio"
+	"flag"
+	//	"fmt"
+	"gopkg.in/mgo.v2"
+	"log"
+	"os"
+	"strconv"
+	"strings"
+	"time"
 )
 
 type Entry struct {
-	Date time.Time
+	Date        time.Time
 	Description string
-	Amount	float32
+	Amount      float32
 }
 
 func parseTime(input string) time.Time {
 	time, err := time.Parse("02/01/2006", input)
 	if err != nil {
-        log.Fatal(err)
-    }
+		log.Fatal(err)
+	}
 	return time
 }
 
@@ -29,41 +30,57 @@ func parseAmount(amount string) float32 {
 	amount = strings.Replace(amount, ",", ".", 1)
 	amountFloat, err := strconv.ParseFloat(amount, 32)
 	if err != nil {
-        log.Fatal(err)
-    }
-    return float32(amountFloat)
+		log.Fatal(err)
+	}
+	return float32(amountFloat)
 }
 
 func processLine(line string) Entry {
-	fields := strings.Split(line, ";");
+	fields := strings.Split(line, ";")
 	return Entry{parseTime(fields[0]), fields[1], parseAmount(fields[2])}
 }
 
-func processEntries(entries []Entry) {
-	var sum float32
-	for _, entry := range entries {
-		sum = sum + entry.Amount
+// As seen in http://blog.mongodb.org/post/80579086742/running-mongodb-queries-concurrently-with-go
+func createDBSession() *mgo.Session {
+	mongoDBDialInfo := &mgo.DialInfo{
+		Addrs:    []string{"localhost:27017"},
+		Timeout:  60 * time.Second,
+		Database: "expenses-analyzer"}
+	// Create a session which maintains a pool of socket connections
+	// to our MongoDB.
+	mongoSession, err := mgo.DialWithInfo(mongoDBDialInfo)
+	if err != nil {
+		log.Fatalf("CreateSession: %s\n", err)
 	}
-	fmt.Println("Sum: ", sum);
+	return mongoSession
+}
+
+func importEntriesIntoDB(mongoSession *mgo.Session, entries []Entry) {
+	expenses := mongoSession.DB("").C("expenses")
+	for _, entry := range entries {
+		expenses.Insert(entry)
+	}
 }
 
 func processFile(file *os.File) {
-    scanner := bufio.NewScanner(file)
-    countLine := 0
-    var entries []Entry
+	scanner := bufio.NewScanner(file)
+	countLine := 0
+	var entries []Entry
 
-    for scanner.Scan() {
-    	if countLine > 7 {
+	for scanner.Scan() {
+		if countLine > 7 {
 			entries = append(entries, processLine(scanner.Text()))
-    	}
-        countLine++
-    }
+		}
+		countLine++
+	}
 
-    processEntries(entries)
+	mongoSession := createDBSession()
 
-    if err := scanner.Err(); err != nil {
-        log.Fatal(err)
-    }
+	importEntriesIntoDB(mongoSession, entries)
+
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func parseFileName() string {
@@ -74,10 +91,10 @@ func parseFileName() string {
 
 func main() {
 	file, err := os.Open(parseFileName())
-    if err != nil {
-        log.Fatal(err)
-    }
-    defer file.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
 
-    processFile(file)
+	processFile(file)
 }
