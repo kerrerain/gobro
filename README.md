@@ -5,5 +5,5 @@ It stands for "Go" and "Slowbrow", which is a lovely pokemon -- but quite lazy. 
 ## Importing a file into database
 
 ```sh
-go run gobro.go -f=<path to the file>
+go run gobro.go -c import -f <path to the file>
 ```
