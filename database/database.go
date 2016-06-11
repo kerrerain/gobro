@@ -1,4 +1,4 @@
-package dbsession
+package database
 
 import (
 	"gopkg.in/mgo.v2"
@@ -7,7 +7,7 @@ import (
 )
 
 // As seen in http://blog.mongodb.org/post/80579086742/running-mongodb-queries-concurrently-with-go
-func Create() *mgo.Session {
+func CreateSession() *mgo.Session {
 	mongoDBDialInfo := &mgo.DialInfo{
 		Addrs:    []string{"localhost:27017"},
 		Timeout:  60 * time.Second,

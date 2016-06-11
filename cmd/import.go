@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/magleff/gobro/database"
 	"github.com/magleff/gobro/expense"
 	"github.com/spf13/cobra"
 	"log"
@@ -16,9 +17,14 @@ var importCmd = &cobra.Command{
 	Long:  `Imports expenses from a .csv file`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Import expenses from", filePath)
+
+		session := database.CreateSession()
 		file := openFile(filePath)
-		expense.ImportFromFile(file)
+		controller := expense.Controller(session)
+		controller.ImportFromFile(file)
+
 		defer file.Close()
+		defer session.Close()
 	},
 }
 
