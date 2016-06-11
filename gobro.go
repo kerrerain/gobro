@@ -1,37 +1,14 @@
 package main
 
 import (
-	"flag"
 	"fmt"
-	"github.com/magleff/gobro/expense"
-	"log"
+	"github.com/magleff/gobro/cmd"
 	"os"
 )
 
-func openFile(fileName string) *os.File {
-	file, err := os.Open(fileName)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return file
-}
-
 func main() {
-	commandFlag := flag.String("c", "", "The command to run")
-	fileFlag := flag.String("f", "", "The path to the file")
-	flag.Parse()
-
-	switch *commandFlag {
-	case "add-fixed":
-		fmt.Println("Add a fixed expense")
-	case "import":
-		fmt.Println("Import expenses from file")
-		file := openFile(*fileFlag)
-		expense.ImportFromFile(file)
-		defer file.Close()
-	default:
-		fmt.Println("Unrecognized command", commandFlag)
-	}
-
-	fmt.Println(*fileFlag)
+    if err := cmd.RootCmd.Execute(); err != nil {
+        fmt.Println(err)
+        os.Exit(-1)
+    }
 }
