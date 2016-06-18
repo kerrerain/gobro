@@ -1,9 +1,11 @@
 package expensefixed
 
 import (
-	"github.com/magleff/gobro/expense"
+	"time"
 )
 
 type ExpenseFixed struct {
-	expense.Expense
+	Date        time.Time
+	Description string
+	Amount      float32
 }

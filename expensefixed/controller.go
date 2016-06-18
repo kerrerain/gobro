@@ -2,9 +2,9 @@ package expensefixed
 
 import (
 	"gopkg.in/mgo.v2"
+	"log"
 	"strconv"
 	"strings"
-	"log"
 )
 
 type ExpenseFixedController struct {
@@ -15,8 +15,12 @@ func Controller(session *mgo.Session) *ExpenseFixedController {
 	return &ExpenseFixedController{session}
 }
 
-func (ec ExpenseFixedController) CreateExpenseFixed(description string, amount string) {
-	dataStore(ec.session).CreateExpenseFixed(description, parseAmount(amount))
+func (ec ExpenseFixedController) CreateExpenseFixed(amount string, description string) {
+	dataStore(ec.session).CreateExpenseFixed(parseAmount(amount), description)
+}
+
+func (ec ExpenseFixedController) ListExpensesFixed() []ExpenseFixed {
+	return dataStore(ec.session).ListExpensesFixed()
 }
 
 // FIXME duplicate code

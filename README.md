@@ -18,3 +18,8 @@ go run gobro.go import -f <path to the file>
 ```sh
 go run gobro.go add fixed "<description>" <amount>
 ```
+
+### List a fixed expense
+```sh
+go run gobro.go list fixed
+```
