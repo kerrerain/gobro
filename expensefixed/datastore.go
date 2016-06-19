@@ -14,14 +14,21 @@ func dataStore(session *mgo.Session) *ExpenseFixedDataStore {
 	return &ExpenseFixedDataStore{session.Copy()}
 }
 
+func collection(session *mgo.Session) *mgo.Collection {
+	return session.DB("").C("expenses-fixed")
+}
+
 func (eds ExpenseFixedDataStore) CreateExpenseFixed(amount float32, description string) {
-	expensesFixed := eds.session.DB("").C("expenses-fixed")
-	expensesFixed.Insert(ExpenseFixed{time.Now(), description, amount})
+	collection(eds.session).Insert(ExpenseFixed{bson.NewObjectId(), time.Now(), description, amount})
 }
 
 func (eds ExpenseFixedDataStore) ListExpensesFixed() []ExpenseFixed {
 	var results []ExpenseFixed
-	expensesFixed := eds.session.DB("").C("expenses-fixed")
-	expensesFixed.Find(bson.M{}).All(&results)
+	collection(eds.session).Find(bson.M{}).All(&results)
 	return results
+}
+
+func (eds ExpenseFixedDataStore) RemoveExpenseFixed(index int32) {
+	expensesFixed := eds.ListExpensesFixed()
+	collection(eds.session).Remove(bson.M{"_id": expensesFixed[index].ID})
 }

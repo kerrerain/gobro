@@ -23,3 +23,8 @@ go run gobro.go add fixed "<description>" <amount>
 ```sh
 go run gobro.go list fixed
 ```
+
+### Remove a fixed expense
+```sh
+go run gobro.go rm <index>
+```

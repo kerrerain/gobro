@@ -23,6 +23,10 @@ func (ec ExpenseFixedController) ListExpensesFixed() []ExpenseFixed {
 	return dataStore(ec.session).ListExpensesFixed()
 }
 
+func (ec ExpenseFixedController) RemoveExpenseFixed(index string) {
+	dataStore(ec.session).RemoveExpenseFixed(parseIndex(index))
+}
+
 // FIXME duplicate code
 func parseAmount(amount string) float32 {
 	amount = strings.Replace(amount, ",", ".", 1)
@@ -31,4 +35,12 @@ func parseAmount(amount string) float32 {
 		log.Fatal(err)
 	}
 	return float32(amountFloat)
+}
+
+func parseIndex(index string) int32 {
+	parsedIndex, err := strconv.ParseInt(index, 0, 32)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return int32(parsedIndex)
 }
