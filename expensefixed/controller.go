@@ -16,15 +16,15 @@ func Controller(session *mgo.Session) *ExpenseFixedController {
 }
 
 func (ec ExpenseFixedController) CreateExpenseFixed(amount string, description string) {
-	dataStore(ec.session).CreateExpenseFixed(parseAmount(amount), description)
+	DataStore(ec.session).CreateExpenseFixed(parseAmount(amount), description)
 }
 
 func (ec ExpenseFixedController) ListExpensesFixed() []ExpenseFixed {
-	return dataStore(ec.session).ListExpensesFixed()
+	return DataStore(ec.session).ListExpensesFixed()
 }
 
 func (ec ExpenseFixedController) RemoveExpenseFixed(index string) {
-	dataStore(ec.session).RemoveExpenseFixed(parseIndex(index))
+	DataStore(ec.session).RemoveExpenseFixed(parseIndex(index))
 }
 
 // FIXME duplicate code

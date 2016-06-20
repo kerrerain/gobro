@@ -8,7 +8,7 @@ type ExpenseDataStore struct {
 	session *mgo.Session
 }
 
-func dataStore(session *mgo.Session) *ExpenseDataStore {
+func DataStore(session *mgo.Session) *ExpenseDataStore {
 	return &ExpenseDataStore{session.Copy()}
 }
 

@@ -10,7 +10,7 @@ type ExpenseFixedDataStore struct {
 	session *mgo.Session
 }
 
-func dataStore(session *mgo.Session) *ExpenseFixedDataStore {
+func DataStore(session *mgo.Session) *ExpenseFixedDataStore {
 	return &ExpenseFixedDataStore{session.Copy()}
 }
 

@@ -20,7 +20,7 @@ func Controller(session *mgo.Session) *ExpenseController {
 
 func (ec ExpenseController) ImportFromFile(file *os.File) {
 	expenses := extractFromFile(file)
-	dataStore(ec.session).ImportExpensesIntoDB(expenses)
+	DataStore(ec.session).ImportExpensesIntoDB(expenses)
 }
 
 func parseTime(input string) time.Time {

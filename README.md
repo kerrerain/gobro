@@ -28,3 +28,8 @@ go run gobro.go list fixed
 ```sh
 go run gobro.go rm <index>
 ```
+
+### Init a budget sheet
+```sh
+go run gobro.go init
+```
