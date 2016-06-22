@@ -6,6 +6,24 @@ import (
 	"time"
 )
 
+type Database struct {
+	mainSession *mgo.Session
+}
+
+func NewDatabase() *Database {
+	instance := new(Database)
+	instance.mainSession = CreateSession()
+	return instance
+}
+
+func (db Database) Session() *mgo.Session {
+	return db.mainSession.Copy()
+}
+
+func (db Database) Collection(session *mgo.Session, name string) *mgo.Collection {
+	return session.DB("").C(name)
+}
+
 // As seen in http://blog.mongodb.org/post/80579086742/running-mongodb-queries-concurrently-with-go
 func CreateSession() *mgo.Session {
 	mongoDBDialInfo := &mgo.DialInfo{

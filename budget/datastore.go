@@ -1,23 +1,23 @@
 package budget
 
 import (
+	"github.com/magleff/gobro/database"
 	"github.com/magleff/gobro/expensefixed"
-	"gopkg.in/mgo.v2"
 )
 
 type BudgetDatastore struct {
-	session *mgo.Session
+	DB *database.Database
 }
 
-func DataStore(session *mgo.Session) *BudgetDatastore {
-	return &BudgetDatastore{session.Copy()}
+func NewDatastore(DB *database.Database) *BudgetDatastore {
+	instance := new(BudgetDatastore)
+	instance.DB = DB
+	return instance
 }
 
-func collection(session *mgo.Session) *mgo.Collection {
-	return session.DB("").C("budget")
-}
-
-func (eds BudgetDatastore) CreateBudget() {
-	expensesFixed := expensefixed.DataStore(eds.session).ListExpensesFixed()
-	collection(eds.session).Insert(NewBudget(expensesFixed))
+func (self BudgetDatastore) CreateBudget() {
+	session := self.DB.Session()
+	expensesFixed := expensefixed.DataStore(session).ListExpensesFixed()
+	self.DB.Collection(session, "budget").Insert(NewBudget(expensesFixed))
+	defer session.Close()
 }

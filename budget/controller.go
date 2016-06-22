@@ -1,17 +1,19 @@
 package budget
 
 import (
-	"gopkg.in/mgo.v2"
+	"github.com/magleff/gobro/database"
 )
 
 type BudgetController struct {
-	session *mgo.Session
+	Datastore *BudgetDatastore
 }
 
-func Controller(session *mgo.Session) *BudgetController {
-	return &BudgetController{session}
+func NewController(DB *database.Database) *BudgetController {
+	instance := new(BudgetController)
+	instance.Datastore = NewDatastore(DB)
+	return instance
 }
 
-func (ec BudgetController) CreateBudget() {
-	DataStore(ec.session).CreateBudget()
+func (self BudgetController) CreateBudget() {
+	self.Datastore.CreateBudget()
 }
