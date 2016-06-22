@@ -1,7 +1,7 @@
 package budget
 
 import (
-	"github.com/magleff/gobro/expensefixed"
+	"github.com/magleff/gobro/features/expensefixed"
 	"gopkg.in/mgo.v2/bson"
 	"time"
 )

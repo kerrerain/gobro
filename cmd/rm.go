@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/magleff/gobro/database"
-	"github.com/magleff/gobro/expensefixed"
+	"github.com/magleff/gobro/features/expensefixed"
 	"github.com/spf13/cobra"
 )
 

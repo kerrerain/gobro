@@ -2,7 +2,7 @@ package budget
 
 import (
 	"github.com/magleff/gobro/database"
-	"github.com/magleff/gobro/expensefixed"
+	"github.com/magleff/gobro/features/expensefixed"
 )
 
 type BudgetDatastore struct {

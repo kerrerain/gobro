@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/magleff/gobro/database"
-	"github.com/magleff/gobro/expense"
+	"github.com/magleff/gobro/features/expense"
 	"github.com/spf13/cobra"
 	"log"
 	"os"

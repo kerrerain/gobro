@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/magleff/gobro/budget"
 	"github.com/magleff/gobro/database"
+	"github.com/magleff/gobro/features/budget"
 	"github.com/spf13/cobra"
 )
 
