@@ -2,25 +2,27 @@ package expense
 
 import (
 	"bufio"
+	"github.com/magleff/gobro/database"
 	"log"
 	"os"
 	"strconv"
 	"strings"
 	"time"
-	"gopkg.in/mgo.v2"
 )
 
 type ExpenseController struct {
-	session *mgo.Session
+	Datastore *ExpenseDataStore
 }
 
-func Controller(session *mgo.Session) *ExpenseController {
-	return &ExpenseController{session}
+func NewController(DB *database.Database) *ExpenseController {
+	instance := new(ExpenseController)
+	instance.Datastore = NewDatastore(DB)
+	return instance
 }
 
-func (ec ExpenseController) ImportFromFile(file *os.File) {
+func (self ExpenseController) ImportFromFile(file *os.File) {
 	expenses := extractFromFile(file)
-	DataStore(ec.session).ImportExpensesIntoDB(expenses)
+	self.Datastore.ImportExpensesIntoDB(expenses)
 }
 
 func parseTime(input string) time.Time {

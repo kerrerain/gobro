@@ -11,8 +11,8 @@ var initCmd = &cobra.Command{
 	Short: "Init a new sheet for the budget",
 	Long:  `Init a new sheet for the budget`,
 	Run: func(cmd *cobra.Command, args []string) {
-		database := database.NewDatabase()
-		controller := budget.NewController(database)
+		DB := database.NewDatabase()
+		controller := budget.NewController(DB)
 		controller.CreateBudget()
 	},
 }

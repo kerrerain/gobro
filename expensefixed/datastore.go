@@ -1,34 +1,38 @@
 package expensefixed
 
 import (
-	"gopkg.in/mgo.v2"
+	"github.com/magleff/gobro/database"
 	"gopkg.in/mgo.v2/bson"
 	"time"
 )
 
 type ExpenseFixedDataStore struct {
-	session *mgo.Session
+	DB *database.Database
 }
 
-func DataStore(session *mgo.Session) *ExpenseFixedDataStore {
-	return &ExpenseFixedDataStore{session.Copy()}
+func NewDatastore(DB *database.Database) *ExpenseFixedDataStore {
+	instance := new(ExpenseFixedDataStore)
+	instance.DB = DB
+	return instance
 }
 
-func collection(session *mgo.Session) *mgo.Collection {
-	return session.DB("").C("expenses-fixed")
+func (self ExpenseFixedDataStore) CreateExpenseFixed(amount float32, description string) {
+	session := self.DB.Session()
+	self.DB.Collection(session, "expenses-fixed").Insert(ExpenseFixed{bson.NewObjectId(), time.Now(), description, amount})
+	defer session.Close()
 }
 
-func (eds ExpenseFixedDataStore) CreateExpenseFixed(amount float32, description string) {
-	collection(eds.session).Insert(ExpenseFixed{bson.NewObjectId(), time.Now(), description, amount})
-}
-
-func (eds ExpenseFixedDataStore) ListExpensesFixed() []ExpenseFixed {
+func (self ExpenseFixedDataStore) ListExpensesFixed() []ExpenseFixed {
 	var results []ExpenseFixed
-	collection(eds.session).Find(bson.M{}).All(&results)
+	session := self.DB.Session()
+	self.DB.Collection(session, "expenses-fixed").Find(bson.M{}).All(&results)
+	defer session.Close()
 	return results
 }
 
-func (eds ExpenseFixedDataStore) RemoveExpenseFixed(index int32) {
-	expensesFixed := eds.ListExpensesFixed()
-	collection(eds.session).Remove(bson.M{"_id": expensesFixed[index].ID})
+func (self ExpenseFixedDataStore) RemoveExpenseFixed(index int32) {
+	expensesFixed := self.ListExpensesFixed()
+	session := self.DB.Session()
+	defer session.Close()
+	self.DB.Collection(session, "expenses-fixed").Remove(bson.M{"_id": expensesFixed[index].ID})
 }

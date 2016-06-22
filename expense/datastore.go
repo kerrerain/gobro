@@ -1,20 +1,24 @@
 package expense
 
 import (
-	"gopkg.in/mgo.v2"
+	"github.com/magleff/gobro/database"
 )
 
 type ExpenseDataStore struct {
-	session *mgo.Session
+	DB *database.Database
 }
 
-func DataStore(session *mgo.Session) *ExpenseDataStore {
-	return &ExpenseDataStore{session.Copy()}
+func NewDatastore(DB *database.Database) *ExpenseDataStore {
+	instance := new(ExpenseDataStore)
+	instance.DB = DB
+	return instance
 }
 
-func (eds ExpenseDataStore) ImportExpensesIntoDB(entries []Expense) {
-	expenses := eds.session.DB("").C("expenses")
+func (self ExpenseDataStore) ImportExpensesIntoDB(entries []Expense) {
+	session := self.DB.Session()
+	expenses := self.DB.Collection(session, "expenses")
 	for _, Expense := range entries {
 		expenses.Insert(Expense)
 	}
+	defer session.Close()
 }

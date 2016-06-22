@@ -11,11 +11,9 @@ var rmCmd = &cobra.Command{
 	Short: "Remove something",
 	Long:  `Remove something`,
 	Run: func(cmd *cobra.Command, args []string) {
-		session := database.CreateSession()
-		controller := expensefixed.Controller(session)
+		DB := database.NewDatabase()
+		controller := expensefixed.NewController(DB)
 		controller.RemoveExpenseFixed(args[0])
-
-		defer session.Close()
 	},
 }
 

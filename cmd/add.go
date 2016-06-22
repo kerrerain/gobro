@@ -26,11 +26,9 @@ var addCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		amount, description := parseArguments(args)
 
-		session := database.CreateSession()
-		controller := expensefixed.Controller(session)
+		DB := database.NewDatabase()
+		controller := expensefixed.NewController(DB)
 		controller.CreateExpenseFixed(amount, description)
-
-		defer session.Close()
 	},
 }
 

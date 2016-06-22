@@ -18,13 +18,12 @@ var importCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Import expenses from", filePath)
 
-		session := database.CreateSession()
+		DB := database.NewDatabase()
 		file := openFile(filePath)
-		controller := expense.Controller(session)
+		controller := expense.NewController(DB)
 		controller.ImportFromFile(file)
 
 		defer file.Close()
-		defer session.Close()
 	},
 }
 

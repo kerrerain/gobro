@@ -18,12 +18,10 @@ var listCmd = &cobra.Command{
 	Short: "List something",
 	Long:  `List something`,
 	Run: func(cmd *cobra.Command, args []string) {
-		session := database.CreateSession()
-		controller := expensefixed.Controller(session)
+		DB := database.NewDatabase()
+		controller := expensefixed.NewController(DB)
 		expensesFixed := controller.ListExpensesFixed()
 		displayExpensesFixed(expensesFixed)
-
-		defer session.Close()
 	},
 }
 
