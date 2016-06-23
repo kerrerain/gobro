@@ -5,7 +5,6 @@ import (
 	"github.com/magleff/gobro/database"
 	"log"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -31,15 +30,6 @@ func parseTime(input string) time.Time {
 		log.Fatal(err)
 	}
 	return time
-}
-
-func parseAmount(amount string) float32 {
-	amount = strings.Replace(amount, ",", ".", 1)
-	amountFloat, err := strconv.ParseFloat(amount, 32)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return float32(amountFloat)
 }
 
 func processLine(line string) Expense {

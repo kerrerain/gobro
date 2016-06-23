@@ -4,7 +4,6 @@ import (
 	"github.com/magleff/gobro/database"
 	"log"
 	"strconv"
-	"strings"
 )
 
 type ExpenseFixedController struct {
@@ -18,7 +17,7 @@ func NewController(DB *database.Database) *ExpenseFixedController {
 }
 
 func (self ExpenseFixedController) CreateExpenseFixed(amount string, description string) {
-	self.Datastore.CreateExpenseFixed(parseAmount(amount), description)
+	self.Datastore.CreateExpenseFixed(*NewExpenseFixed(amount, description))
 }
 
 func (self ExpenseFixedController) ListExpensesFixed() []ExpenseFixed {
@@ -27,16 +26,6 @@ func (self ExpenseFixedController) ListExpensesFixed() []ExpenseFixed {
 
 func (self ExpenseFixedController) RemoveExpenseFixed(index string) {
 	self.Datastore.RemoveExpenseFixed(parseIndex(index))
-}
-
-// FIXME duplicate code
-func parseAmount(amount string) float32 {
-	amount = strings.Replace(amount, ",", ".", 1)
-	amountFloat, err := strconv.ParseFloat(amount, 32)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return float32(amountFloat)
 }
 
 func parseIndex(index string) int32 {

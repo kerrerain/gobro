@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/magleff/gobro/database"
+	"github.com/magleff/gobro/features/budget"
 	"github.com/magleff/gobro/features/expensefixed"
 	"github.com/spf13/cobra"
 )
@@ -10,14 +11,16 @@ func parseArguments(args []string) (string, string) {
 	var amount string
 	var description string
 
-	amount = args[1]
+	amount = args[0]
 
-	if len(args) > 2 {
-		description = args[2]
+	if len(args) > 1 {
+		description = args[1]
 	}
 
 	return amount, description
 }
+
+var typeOfExpense string
 
 var addCmd = &cobra.Command{
 	Use:   "add",
@@ -25,13 +28,19 @@ var addCmd = &cobra.Command{
 	Long:  `Add something`,
 	Run: func(cmd *cobra.Command, args []string) {
 		amount, description := parseArguments(args)
-
 		DB := database.NewDatabase()
-		controller := expensefixed.NewController(DB)
-		controller.CreateExpenseFixed(amount, description)
+
+		if typeOfExpense == "fixed" {
+			controller := expensefixed.NewController(DB)
+			controller.CreateExpenseFixed(amount, description)
+		} else {
+			budgetController := budget.NewController(DB)
+			budgetController.AddExpenseToCurrentBudget(amount, description)
+		}
 	},
 }
 
 func init() {
+	addCmd.Flags().StringVarP(&typeOfExpense, "type", "t", "", "Type of the expense")
 	RootCmd.AddCommand(addCmd)
 }

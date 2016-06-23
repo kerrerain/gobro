@@ -3,7 +3,6 @@ package expensefixed
 import (
 	"github.com/magleff/gobro/database"
 	"gopkg.in/mgo.v2/bson"
-	"time"
 )
 
 type ExpenseFixedDataStore struct {
@@ -16,9 +15,9 @@ func NewDatastore(DB *database.Database) *ExpenseFixedDataStore {
 	return instance
 }
 
-func (self ExpenseFixedDataStore) CreateExpenseFixed(amount float32, description string) {
+func (self ExpenseFixedDataStore) CreateExpenseFixed(expenseFixed ExpenseFixed) {
 	session := self.DB.Session()
-	self.DB.Collection(session, "expenses-fixed").Insert(ExpenseFixed{bson.NewObjectId(), time.Now(), description, amount})
+	self.DB.Collection(session, "expenses-fixed").Insert(expenseFixed)
 	defer session.Close()
 }
 
