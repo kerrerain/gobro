@@ -17,9 +17,9 @@ func NewController(DB *database.Database) *BudgetController {
 	return instance
 }
 
-func (self BudgetController) CreateBudget() {
+func (self BudgetController) CreateBudget(balance string) {
 	if self.Datastore.CurrentBudget() == nil {
-		self.Datastore.CreateBudget()
+		self.Datastore.CreateBudget(balance)
 	} else {
 		log.Fatal("There's already an active budget, use 'close' to close the current budget")
 	}
