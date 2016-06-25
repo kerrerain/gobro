@@ -4,6 +4,7 @@ import (
 	"github.com/magleff/gobro/database"
 	"github.com/magleff/gobro/features/expensefixed"
 	"gopkg.in/mgo.v2/bson"
+	"log"
 )
 
 type BudgetDatastore struct {
@@ -23,12 +24,26 @@ func (self BudgetDatastore) CreateBudget() {
 	defer session.Close()
 }
 
-func (self BudgetDatastore) GetCurrentBudget() Budget {
+// Gives the active budget sheet, or a nil value if currently there isn't one
+func (self BudgetDatastore) CurrentBudget() *Budget {
+	var currentBudget *Budget
+
 	session := self.DB.Session()
 	var budgetSheets []Budget
 	self.DB.Collection(session, "budget").Find(bson.M{"active": true}).All(&budgetSheets)
+
 	defer session.Close()
-	return budgetSheets[0]
+
+	if len(budgetSheets) > 1 {
+		log.Fatal("There are more than one active budget!")
+	} else if len(budgetSheets) == 1 {
+		currentBudget = &budgetSheets[0]
+	} else {
+		currentBudget = nil
+	}
+
+	// Active budget sheet or nil
+	return currentBudget
 }
 
 func (self BudgetDatastore) Save(budget Budget) {
