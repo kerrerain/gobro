@@ -20,8 +20,6 @@ func parseArguments(args []string) (string, string) {
 	return amount, description
 }
 
-var typeOfExpense string
-
 var addCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add something",

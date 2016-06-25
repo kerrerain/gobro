@@ -5,6 +5,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var typeOfExpense string
+
 var RootCmd = &cobra.Command{
 	Use:   "gobro",
 	Short: "Simple budget management",
