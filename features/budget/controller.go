@@ -4,6 +4,7 @@ import (
 	"github.com/magleff/gobro/database"
 	"github.com/magleff/gobro/features/expense"
 	"log"
+	"strings"
 )
 
 type BudgetController struct {
@@ -30,6 +31,16 @@ func (self BudgetController) CurrentBudget() *Budget {
 
 func (self BudgetController) AddExpenseToCurrentBudget(amount string, description string) {
 	currentBudget := self.Datastore.CurrentBudget()
-	currentBudget.Expenses = append(currentBudget.Expenses, *expense.NewExpense(amount, description))
+	currentBudget.Expenses = append(currentBudget.Expenses, createExpense(amount, description))
 	self.Datastore.Save(*currentBudget)
+}
+
+func createExpense(amount string, description string) expense.Expense {
+	var newExpense expense.Expense
+	if strings.Contains(amount, "+") {
+		newExpense = *expense.NewResource(amount, description)
+	} else {
+		newExpense = *expense.NewExpense(amount, description)
+	}
+	return newExpense
 }
