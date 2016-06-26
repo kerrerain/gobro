@@ -6,6 +6,7 @@ import (
 )
 
 var typeOfExpense string
+var pristine bool
 
 var RootCmd = &cobra.Command{
 	Use:   "gobro",

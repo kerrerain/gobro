@@ -17,10 +17,16 @@ var initCmd = &cobra.Command{
 		}
 		DB := database.NewDatabase()
 		controller := budget.NewController(DB)
-		controller.CreateBudget(balance)
+		if !pristine {
+			controller.CreateBudget(balance)
+		} else {
+			controller.CreateBudgetWithoutExpensesFixed(balance)
+		}
 	},
 }
 
 func init() {
+	initCmd.Flags().BoolVarP(&pristine, "pristine", "p", false, `If this flag is set,
+		creates a budget without fixed expenses`)
 	RootCmd.AddCommand(initCmd)
 }

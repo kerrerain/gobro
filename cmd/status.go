@@ -5,6 +5,8 @@ import (
 	"github.com/magleff/gobro/database"
 	"github.com/magleff/gobro/features/budget"
 	"github.com/spf13/cobra"
+	"log"
+	"strconv"
 )
 
 func computeEarnings(budget budget.Budget) float32 {
@@ -27,14 +29,21 @@ func computeExpenses(budget budget.Budget) float32 {
 	return expenses
 }
 
+func FloatToString(input float32) string {
+	return strconv.FormatFloat(float64(input), 'f', 2, 32)
+}
+
 func displayBudgetInfos(budget budget.Budget) {
 	earnings := computeEarnings(budget)
 	expenses := computeExpenses(budget)
+	diff := earnings + expenses
+	balance := budget.InitialBalance + diff
 
 	fmt.Println("Created on", budget.StartDate)
+	fmt.Println("Initial balance", budget.InitialBalance)
 	fmt.Println("Total earnings", earnings)
 	fmt.Println("Total expenses", expenses)
-	fmt.Println("Balance", earnings+expenses)
+	fmt.Println("Balance", FloatToString(balance), "("+FloatToString(diff)+")")
 }
 
 var statusCmd = &cobra.Command{
@@ -45,7 +54,11 @@ var statusCmd = &cobra.Command{
 		DB := database.NewDatabase()
 		controller := budget.NewController(DB)
 		currentBudget := controller.CurrentBudget()
-		displayBudgetInfos(*currentBudget)
+		if currentBudget != nil {
+			displayBudgetInfos(*currentBudget)
+		} else {
+			log.Fatal("There is not any active budget.")
+		}
 	},
 }
 
