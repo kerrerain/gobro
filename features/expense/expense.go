@@ -17,16 +17,11 @@ func NewExpense(amount string, description string) *Expense {
 	instance := new(Expense)
 	instance.Date = time.Now()
 	instance.Description = description
-	instance.Amount = parseAmount(amount)
-	instance.Amount = -1 * instance.Amount
-	return instance
-}
-
-func NewResource(amount string, description string) *Expense {
-	instance := new(Expense)
-	instance.Date = time.Now()
-	instance.Description = description
-	instance.Amount = parseAmount(amount)
+	if strings.Contains(amount, "+") {
+		instance.Amount = parseAmount(amount)
+	} else {
+		instance.Amount = parseAmount(amount) * -1
+	}
 	return instance
 }
 
