@@ -86,7 +86,6 @@ func (self MailController) ImportFromMail() []expense.Expense {
 	var (
 		c   *imap.Client
 		cmd *imap.Command
-		rsp *imap.Response
 	)
 
 	if os.Getenv("GOBRO_MAIL_SERVER") == "" || os.Getenv("GOBRO_MAIL_USER") == "" || os.Getenv("GOBRO_MAIL_PASSWORD") == "" {
@@ -113,31 +112,13 @@ func (self MailController) ImportFromMail() []expense.Expense {
 		c.Login(os.Getenv("GOBRO_MAIL_USER"), os.Getenv("GOBRO_MAIL_PASSWORD"))
 	}
 
-	// List all top-level mailboxes, wait for the command to finish
-	cmd, _ = imap.Wait(c.List("", "%"))
-
-	// Print mailbox information
-	fmt.Println("\nTop-level mailboxes:")
-	for _, rsp = range cmd.Data {
-		fmt.Println("|--", rsp.MailboxInfo())
-	}
-
-	// Check for new unilateral server data responses
-	for _, rsp = range c.Data {
-		fmt.Println("Server data:", rsp)
-	}
-	c.Data = nil
-
 	// Open a mailbox (synchronous command - no need for imap.Wait)
 	c.Select("INBOX", true)
 
-	// Fetch the headers of the 50 most recent messages
+	cmd, _ = imap.Wait(c.Search("UNSEEN", "SUBJECT", c.Quote("Gobro")))
 	set, _ := imap.NewSeqSet("")
-	if c.Mailbox.Messages >= 50 {
-		set.AddRange(c.Mailbox.Messages-49, c.Mailbox.Messages)
-	} else {
-		set.Add("1:*")
-	}
+	set.AddNum(cmd.Data[0].SearchResults()...)
+
 	cmd, _ = c.Fetch(set, "RFC822.HEADER")
 
 	// Process responses while the command is running
