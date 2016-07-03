@@ -113,16 +113,20 @@ func (self MailController) ImportFromMail() []expense.Expense {
 	}
 
 	// Open a mailbox (synchronous command - no need for imap.Wait)
-	c.Select("INBOX", true)
+	c.Select("INBOX", false)
 
 	cmd, _ = imap.Wait(c.Search("UNSEEN", "SUBJECT", c.Quote("Gobro")))
 	set, _ := imap.NewSeqSet("")
 	set.AddNum(cmd.Data[0].SearchResults()...)
 
-	cmd, _ = c.Fetch(set, "RFC822.HEADER")
+	cmd, _ = c.Fetch(set, "RFC822.HEADER", "BODY")
 
 	// Process responses while the command is running
 	fmt.Println("\nExtracting data from the mailbox:")
 
-	return fetchExpensesFromMailData(c, cmd)
+	expenses := fetchExpensesFromMailData(c, cmd)
+
+	c.Store(set, "+FLAGS", imap.NewFlagSet(`\Seen`))
+
+	return expenses
 }
