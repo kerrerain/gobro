@@ -29,6 +29,10 @@ func (self BudgetController) CreateBudget(balance string) {
 	}
 }
 
+func (self BudgetController) SaveBudget(budget *Budget) {
+	self.Datastore.Save(*budget)
+}
+
 func (self BudgetController) CreateBudgetWithoutExpensesFixed(balance string) {
 	if self.Datastore.CurrentBudget() == nil {
 		self.Datastore.CreateBudget([]expensefixed.ExpenseFixed{}, balance)

@@ -31,7 +31,7 @@ func NewBudget(expensesFixed []expensefixed.ExpenseFixed, balance string) *Budge
 func convertExpensesFixed(expensesFixed []expensefixed.ExpenseFixed) []expense.Expense {
 	var expenses []expense.Expense
 	for _, entry := range expensesFixed {
-		expenses = append(expenses, expense.Expense{time.Now(), entry.Description, entry.Amount})
+		expenses = append(expenses, expense.Expense{time.Now(), entry.Description, entry.Amount, false})
 	}
 	return expenses
 }

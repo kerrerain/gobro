@@ -34,7 +34,9 @@ func parseTime(input string) time.Time {
 
 func processLine(line string) Expense {
 	fields := strings.Split(line, ";")
-	return Expense{parseTime(fields[0]), fields[1], parseAmount(fields[2])}
+	expense := NewExpense(fields[2], fields[1])
+	expense.Date = parseTime(fields[0])
+	return *expense
 }
 
 func extractFromFile(file *os.File) []Expense {

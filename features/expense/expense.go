@@ -11,6 +11,7 @@ type Expense struct {
 	Date        time.Time
 	Description string
 	Amount      float32
+	Checked     bool
 }
 
 func NewExpense(amount string, description string) *Expense {
@@ -22,6 +23,7 @@ func NewExpense(amount string, description string) *Expense {
 	} else {
 		instance.Amount = parseAmount(amount) * -1
 	}
+	instance.Checked = false
 	return instance
 }
 
