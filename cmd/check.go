@@ -41,15 +41,14 @@ func containsString(slice []string, element string) bool {
 	return !(posString(slice, element) == -1)
 }
 
-// As seen in https://gobyexample.com/collection-functions
-func filter(vs []expense.Expense, f func(expense.Expense) bool) []expense.Expense {
-	vsf := make([]expense.Expense, 0)
-	for _, v := range vs {
-		if f(v) {
-			vsf = append(vsf, v)
-		}
+func checkExpense(entry *expense.Expense) {
+	fmt.Println("-> ", entry.Amount, entry.Description, entry.Date, "? (y/...)")
+	if askForConfirmation() {
+		entry.Checked = true
+		fmt.Println("checked")
+	} else {
+		fmt.Println("not checked")
 	}
-	return vsf
 }
 
 var checkCommand = &cobra.Command{
@@ -60,19 +59,13 @@ var checkCommand = &cobra.Command{
 		DB := database.NewDatabase()
 		budgetController := budget.NewController(DB)
 		currentBudget := budgetController.CurrentBudget()
-		expenses := filter(currentBudget.Expenses, func(obj expense.Expense) bool {
-			return !obj.Checked
-		})
+		expenses := currentBudget.Expenses
 
 		for index, entry := range expenses {
-			fmt.Println("-> ", entry.Amount, entry.Description, entry.Date, "? (y/...)")
-			if askForConfirmation() {
-				expenses[index].Checked = true
+			if !entry.Checked {
+				checkExpense(&expenses[index])
 				currentBudget.Expenses = expenses
 				budgetController.SaveBudget(currentBudget)
-				fmt.Println("checked")
-			} else {
-				fmt.Println("not checked")
 			}
 		}
 	},

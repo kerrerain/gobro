@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/magleff/gobro/database"
 	"github.com/magleff/gobro/features/budget"
+	"github.com/magleff/gobro/features/expense"
+	"github.com/magleff/gobro/utils/collections"
 	"github.com/spf13/cobra"
 	"log"
 	"strconv"
@@ -29,6 +31,19 @@ func computeExpenses(budget budget.Budget) float32 {
 	return expenses
 }
 
+func computeUncheckedExpenses(budget budget.Budget) float32 {
+	expenses := float32(0.00)
+	filteredExpenses := collections.Filter(budget.Expenses, func(obj expense.Expense) bool {
+		return !obj.Checked
+	})
+	for _, entry := range filteredExpenses {
+		if entry.Amount <= 0 {
+			expenses += entry.Amount
+		}
+	}
+	return expenses
+}
+
 func FloatToString(input float32) string {
 	return strconv.FormatFloat(float64(input), 'f', 2, 32)
 }
@@ -36,6 +51,7 @@ func FloatToString(input float32) string {
 func displayBudgetInfos(budget budget.Budget) {
 	earnings := computeEarnings(budget)
 	expenses := computeExpenses(budget)
+	uncheckedExpenses := computeUncheckedExpenses(budget)
 	diff := earnings + expenses
 	balance := budget.InitialBalance + diff
 
@@ -43,6 +59,7 @@ func displayBudgetInfos(budget budget.Budget) {
 	fmt.Println("Initial balance", budget.InitialBalance)
 	fmt.Println("Total earnings", earnings)
 	fmt.Println("Total expenses", expenses)
+	fmt.Println("Total unchecked expenses", uncheckedExpenses)
 	fmt.Println("Balance", FloatToString(balance), "("+FloatToString(diff)+")")
 }
 
