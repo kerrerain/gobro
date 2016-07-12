@@ -10,6 +10,12 @@ TODO
 
 TODO
 
+## Run the tests
+
+```sh
+go test ./...
+```
+
 ## Usecase
 
 ### Create a budget and get the status
