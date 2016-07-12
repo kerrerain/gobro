@@ -117,5 +117,20 @@ Total earnings 0
 Total expenses 0
 Balance 2000 (0)
 ```
+
+### Manually check the expenses
+
+It's better to check frequently your bank account, in order to see if it
+matches what is expected in the budget.
+
+``` sh
+./gobro check
+```
+
+For each expense, Gobro will ask if it has been traced on your bank account. You have to enter "y"
+if you've got the trace. If not, then just press enter.
+
+Running the status command gives the sum of the expenses that have not been checked yet.
+
 ### Remove / Update / Fix
 TODO
