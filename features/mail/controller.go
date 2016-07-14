@@ -33,12 +33,12 @@ func parseAmount(amount string) float32 {
 	return float32(amountFloat)
 }
 
-func populateExpensesFromGobroMail(expenses *[]expense.Expense, message *mail.Message) {
-	subject := message.Header.Get("Subject")
+func populateExpensesFromGobroMail(expenses *[]expense.Expense, subject string, body string) {
 	chunks := strings.Split(subject, " ")
+	bodyChunks := strings.Split(body, "=")
 	if len(chunks) == 2 && chunks[0] == PREFIX {
-		fmt.Println("Amount:", chunks[1])
-		newExpense := *expense.NewExpense(chunks[1], "")
+		fmt.Println("Amount:", chunks[1], "Body:", bodyChunks[0])
+		newExpense := *expense.NewExpense(chunks[1], bodyChunks[0])
 		*expenses = append(*expenses, newExpense)
 	}
 }
@@ -53,8 +53,10 @@ func fetchExpensesFromMailData(c *imap.Client, cmd *imap.Command) []expense.Expe
 		// Process command data
 		for _, rsp := range cmd.Data {
 			header := imap.AsBytes(rsp.MessageInfo().Attrs["RFC822.HEADER"])
+			body := imap.AsBytes(rsp.MessageInfo().Attrs["BODY[1]"])
+
 			if msg, _ := mail.ReadMessage(bytes.NewReader(header)); msg != nil {
-				populateExpensesFromGobroMail(&expenses, msg)
+				populateExpensesFromGobroMail(&expenses, msg.Header.Get("Subject"), string(body))
 			}
 		}
 
@@ -119,7 +121,7 @@ func (self MailController) ImportFromMail() []expense.Expense {
 	set, _ := imap.NewSeqSet("")
 	set.AddNum(cmd.Data[0].SearchResults()...)
 
-	cmd, _ = c.Fetch(set, "RFC822.HEADER", "BODY")
+	cmd, _ = c.Fetch(set, "RFC822.HEADER", "BODY[1]")
 
 	// Process responses while the command is running
 	fmt.Println("\nExtracting data from the mailbox:")
