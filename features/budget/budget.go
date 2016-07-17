@@ -3,10 +3,9 @@ package budget
 import (
 	"github.com/magleff/gobro/features/expense"
 	"github.com/magleff/gobro/features/expensefixed"
+	amountUtils "github.com/magleff/gobro/utils/amount"
 	"gopkg.in/mgo.v2/bson"
 	"log"
-	"strconv"
-	"strings"
 	"time"
 )
 
@@ -24,7 +23,14 @@ func NewBudget(expensesFixed []expensefixed.ExpenseFixed, balance string) *Budge
 	instance.Expenses = convertExpensesFixed(expensesFixed)
 	instance.StartDate = time.Now()
 	instance.Active = true
-	instance.InitialBalance = parseAmount(balance)
+
+	amountParsed, err := amountUtils.ParseString(balance)
+	if err != nil {
+		log.Fatal(err)
+	} else {
+		instance.InitialBalance = amountParsed
+	}
+
 	return instance
 }
 
@@ -34,13 +40,4 @@ func convertExpensesFixed(expensesFixed []expensefixed.ExpenseFixed) []expense.E
 		expenses = append(expenses, expense.Expense{time.Now(), entry.Description, entry.Amount, false})
 	}
 	return expenses
-}
-
-func parseAmount(amount string) float32 {
-	amount = strings.Replace(amount, ",", ".", 1)
-	amountFloat, err := strconv.ParseFloat(amount, 32)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return float32(amountFloat)
 }
