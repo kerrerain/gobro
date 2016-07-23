@@ -19,7 +19,7 @@ func NewDatastore(DB *database.Database) *BudgetDatastore {
 
 func (self BudgetDatastore) CreateBudget(expensesFixed []expensefixed.ExpenseFixed, balance string) {
 	session := self.DB.Session()
-	self.DB.Collection(session, "budget").Insert(NewBudget(expensesFixed, balance))
+	self.DB.Collection(session, "budget").Insert(NewBudgetWithExpensesFixed(expensesFixed, balance))
 	defer session.Close()
 }
 

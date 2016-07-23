@@ -18,11 +18,11 @@ type Budget struct {
 	Active         bool
 }
 
-func NewBudget(expensesFixed []expensefixed.ExpenseFixed, balance string) *Budget {
+func NewBudget(balance string) *Budget {
 	instance := new(Budget)
-	instance.Expenses = convertExpensesFixed(expensesFixed)
 	instance.StartDate = time.Now()
 	instance.Active = true
+	instance.Expenses = make([]expense.Expense, 0)
 
 	amountParsed, err := amountUtils.ParseString(balance)
 	if err != nil {
@@ -31,6 +31,12 @@ func NewBudget(expensesFixed []expensefixed.ExpenseFixed, balance string) *Budge
 		instance.InitialBalance = amountParsed
 	}
 
+	return instance
+}
+
+func NewBudgetWithExpensesFixed(expensesFixed []expensefixed.ExpenseFixed, balance string) *Budget {
+	instance := NewBudget(balance)
+	instance.Expenses = convertExpensesFixed(expensesFixed)
 	return instance
 }
 
