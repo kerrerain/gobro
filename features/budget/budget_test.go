@@ -1,7 +1,7 @@
 package budget
 
 import (
-	"github.com/magleff/gobro/features/expensefixed"
+	"github.com/magleff/gobro/features/expense"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -18,8 +18,8 @@ func TestNewBudget(t *testing.T) {
 }
 
 func TestNewBudgetWithExpensesFixed(t *testing.T) {
-	expensesFixed := []expensefixed.ExpenseFixed{*expensefixed.NewExpenseFixed("60.50", "test"),
-		*expensefixed.NewExpenseFixed("50.25", "test2")}
+	expensesFixed := []expense.Expense{*expense.NewExpense("60.50", "test"),
+		*expense.NewExpense("50.25", "test2")}
 	budget := NewBudgetWithExpensesFixed(expensesFixed, "32.52")
 	assert.Equal(t, 2, len(budget.Expenses), "Should init the budget with fixed expenses")
 }

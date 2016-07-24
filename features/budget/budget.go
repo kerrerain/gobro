@@ -2,7 +2,6 @@ package budget
 
 import (
 	"github.com/magleff/gobro/features/expense"
-	"github.com/magleff/gobro/features/expensefixed"
 	amountUtils "github.com/magleff/gobro/utils/amount"
 	"gopkg.in/mgo.v2/bson"
 	"log"
@@ -34,16 +33,8 @@ func NewBudget(balance string) *Budget {
 	return instance
 }
 
-func NewBudgetWithExpensesFixed(expensesFixed []expensefixed.ExpenseFixed, balance string) *Budget {
+func NewBudgetWithExpensesFixed(expensesFixed []expense.Expense, balance string) *Budget {
 	instance := NewBudget(balance)
-	instance.Expenses = convertExpensesFixed(expensesFixed)
+	instance.Expenses = expensesFixed
 	return instance
-}
-
-func convertExpensesFixed(expensesFixed []expensefixed.ExpenseFixed) []expense.Expense {
-	var expenses []expense.Expense
-	for _, entry := range expensesFixed {
-		expenses = append(expenses, expense.Expense{time.Now(), entry.Description, entry.Amount, false})
-	}
-	return expenses
 }

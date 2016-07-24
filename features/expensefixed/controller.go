@@ -2,6 +2,7 @@ package expensefixed
 
 import (
 	"github.com/magleff/gobro/database"
+	"github.com/magleff/gobro/features/expense"
 	"log"
 	"strconv"
 )
@@ -17,10 +18,10 @@ func NewController(DB *database.Database) *ExpenseFixedController {
 }
 
 func (self ExpenseFixedController) CreateExpenseFixed(amount string, description string) {
-	self.Datastore.CreateExpenseFixed(*NewExpenseFixed(amount, description))
+	self.Datastore.CreateExpenseFixed(*expense.NewExpense(amount, description))
 }
 
-func (self ExpenseFixedController) ListExpensesFixed() []ExpenseFixed {
+func (self ExpenseFixedController) ListExpensesFixed() []expense.Expense {
 	return self.Datastore.ListExpensesFixed()
 }
 

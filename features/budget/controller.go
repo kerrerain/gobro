@@ -35,7 +35,7 @@ func (self BudgetController) SaveBudget(budget *Budget) {
 
 func (self BudgetController) CreateBudgetWithoutExpensesFixed(balance string) {
 	if self.Datastore.CurrentBudget() == nil {
-		self.Datastore.CreateBudget([]expensefixed.ExpenseFixed{}, balance)
+		self.Datastore.CreateBudget([]expense.Expense{}, balance)
 	} else {
 		log.Fatal("There's already an active budget, use 'close' to close the current budget or 'rm' to remove it")
 	}

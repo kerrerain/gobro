@@ -2,12 +2,14 @@ package expense
 
 import (
 	amountUtils "github.com/magleff/gobro/utils/amount"
+	"gopkg.in/mgo.v2/bson"
 	"log"
 	"strings"
 	"time"
 )
 
 type Expense struct {
+	ID          bson.ObjectId `bson:"_id,omitempty"`
 	Date        time.Time
 	Description string
 	Amount      float32

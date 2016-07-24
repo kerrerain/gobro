@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"github.com/magleff/gobro/database"
 	"github.com/magleff/gobro/features/budget"
+	"github.com/magleff/gobro/features/expense"
 	"github.com/magleff/gobro/features/expensefixed"
 	"github.com/spf13/cobra"
 )
 
-func displayExpensesFixed(expensesFixed []expensefixed.ExpenseFixed) {
+func displayExpensesFixed(expensesFixed []expense.Expense) {
 	for index, entry := range expensesFixed {
 		fmt.Println(index, ")", entry.Amount, entry.Description, entry.Date)
 	}

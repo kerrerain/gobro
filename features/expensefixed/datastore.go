@@ -2,6 +2,7 @@ package expensefixed
 
 import (
 	"github.com/magleff/gobro/database"
+	"github.com/magleff/gobro/features/expense"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -15,14 +16,14 @@ func NewDatastore(DB *database.Database) *ExpenseFixedDataStore {
 	return instance
 }
 
-func (self ExpenseFixedDataStore) CreateExpenseFixed(expenseFixed ExpenseFixed) {
+func (self ExpenseFixedDataStore) CreateExpenseFixed(expenseFixed expense.Expense) {
 	session := self.DB.Session()
 	self.DB.Collection(session, "expenses-fixed").Insert(expenseFixed)
 	defer session.Close()
 }
 
-func (self ExpenseFixedDataStore) ListExpensesFixed() []ExpenseFixed {
-	var results []ExpenseFixed
+func (self ExpenseFixedDataStore) ListExpensesFixed() []expense.Expense {
+	var results []expense.Expense
 	session := self.DB.Session()
 	self.DB.Collection(session, "expenses-fixed").Find(bson.M{}).All(&results)
 	defer session.Close()

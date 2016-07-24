@@ -2,7 +2,7 @@ package budget
 
 import (
 	"github.com/magleff/gobro/database"
-	"github.com/magleff/gobro/features/expensefixed"
+	"github.com/magleff/gobro/features/expense"
 	"gopkg.in/mgo.v2/bson"
 	"log"
 )
@@ -17,7 +17,7 @@ func NewDatastore(DB *database.Database) *BudgetDatastore {
 	return instance
 }
 
-func (self BudgetDatastore) CreateBudget(expensesFixed []expensefixed.ExpenseFixed, balance string) {
+func (self BudgetDatastore) CreateBudget(expensesFixed []expense.Expense, balance string) {
 	session := self.DB.Session()
 	self.DB.Collection(session, "budget").Insert(NewBudgetWithExpensesFixed(expensesFixed, balance))
 	defer session.Close()
