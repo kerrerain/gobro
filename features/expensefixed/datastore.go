@@ -6,33 +6,27 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-type ExpenseFixedDataStore struct {
-	DB *database.Database
+type ExpenseFixedDatastore struct {
+	database.Datastore
 }
 
-func NewDatastore(DB *database.Database) *ExpenseFixedDataStore {
-	instance := new(ExpenseFixedDataStore)
-	instance.DB = DB
-	return instance
+func (self ExpenseFixedDatastore) CreateExpenseFixed(expenseFixed expense.Expense) {
+	self.ExecuteInSession(func() {
+		self.Collection("expenses-fixed").Insert(expenseFixed)
+	})
 }
 
-func (self ExpenseFixedDataStore) CreateExpenseFixed(expenseFixed expense.Expense) {
-	session := self.DB.Session()
-	self.DB.Collection(session, "expenses-fixed").Insert(expenseFixed)
-	defer session.Close()
-}
-
-func (self ExpenseFixedDataStore) ListExpensesFixed() []expense.Expense {
+func (self ExpenseFixedDatastore) ListExpensesFixed() []expense.Expense {
 	var results []expense.Expense
-	session := self.DB.Session()
-	self.DB.Collection(session, "expenses-fixed").Find(bson.M{}).All(&results)
-	defer session.Close()
+	self.ExecuteInSession(func() {
+		self.Collection("expenses-fixed").Find(bson.M{}).All(&results)
+	})
 	return results
 }
 
-func (self ExpenseFixedDataStore) RemoveExpenseFixed(index int32) {
+func (self ExpenseFixedDatastore) RemoveExpenseFixed(index int32) {
 	expensesFixed := self.ListExpensesFixed()
-	session := self.DB.Session()
-	defer session.Close()
-	self.DB.Collection(session, "expenses-fixed").Remove(bson.M{"_id": expensesFixed[index].ID})
+	self.ExecuteInSession(func() {
+		self.Collection("expenses-fixed").Remove(bson.M{"_id": expensesFixed[index].ID})
+	})
 }

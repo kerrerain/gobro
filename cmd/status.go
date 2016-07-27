@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/magleff/gobro/database"
 	"github.com/magleff/gobro/features/budget"
 	"github.com/magleff/gobro/features/expense"
 	"github.com/magleff/gobro/utils/collections"
@@ -68,8 +67,7 @@ var statusCmd = &cobra.Command{
 	Short: "Gives the status of the current budget",
 	Long:  `Gives the status of the current budget`,
 	Run: func(cmd *cobra.Command, args []string) {
-		DB := database.NewDatabase()
-		controller := budget.NewController(DB)
+		controller := budget.NewBudgetController()
 		currentBudget := controller.CurrentBudget()
 		if currentBudget != nil {
 			displayBudgetInfos(*currentBudget)

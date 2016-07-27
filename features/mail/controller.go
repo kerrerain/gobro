@@ -3,7 +3,6 @@ package mail
 import (
 	"bytes"
 	"fmt"
-	"github.com/magleff/gobro/database"
 	"github.com/magleff/gobro/features/expense"
 	"github.com/mxk/go-imap/imap"
 	"log"
@@ -18,7 +17,7 @@ const PREFIX = "Gobro"
 
 type MailController struct{}
 
-func NewMailController(DB *database.Database) *MailController {
+func NewMailController() *MailController {
 	instance := new(MailController)
 	return instance
 }

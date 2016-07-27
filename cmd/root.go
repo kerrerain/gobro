@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/magleff/gobro/database"
 	"github.com/spf13/cobra"
 )
 
@@ -10,7 +9,6 @@ var filePath string
 var typeOfExpense string
 var pristine bool
 var mailFlag bool
-var DB *database.Database
 
 var RootCmd = &cobra.Command{
 	Use:   "gobro",

@@ -2,7 +2,6 @@ package expense
 
 import (
 	"bufio"
-	"github.com/magleff/gobro/database"
 	"log"
 	"os"
 	"strings"
@@ -10,18 +9,18 @@ import (
 )
 
 type ExpenseController struct {
-	Datastore *ExpenseDataStore
+	ExpenseDatastore *ExpenseDatastore
 }
 
-func NewController(DB *database.Database) *ExpenseController {
+func NewExpenseController() *ExpenseController {
 	instance := new(ExpenseController)
-	instance.Datastore = NewDatastore(DB)
+	instance.ExpenseDatastore = new(ExpenseDatastore)
 	return instance
 }
 
-func (self ExpenseController) ImportFromFile(file *os.File) {
+func (self *ExpenseController) ImportFromFile(file *os.File) {
 	expenses := extractFromFile(file)
-	self.Datastore.ImportExpensesIntoDB(expenses)
+	self.ExpenseDatastore.ImportExpensesIntoDB(expenses)
 }
 
 func parseTime(input string) time.Time {

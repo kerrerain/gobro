@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/magleff/gobro/database"
 	"github.com/magleff/gobro/features/budget"
 	"github.com/magleff/gobro/features/expense"
 	"github.com/magleff/gobro/features/mail"
@@ -26,15 +25,15 @@ var importCmd = &cobra.Command{
 }
 
 func importFromMail() {
-	controller := mail.NewMailController(DB)
-	budgetController := budget.NewController(DB)
+	controller := mail.NewMailController()
+	budgetController := budget.NewBudgetController()
 	expenses := controller.ImportFromMail()
 	budgetController.AddRawExpensesToCurrentBudget(expenses)
 }
 
 func importFromFile(filePath string) {
 	file := openFile(filePath)
-	controller := expense.NewController(DB)
+	controller := expense.NewExpenseController()
 	controller.ImportFromFile(file)
 	defer file.Close()
 }
@@ -48,7 +47,6 @@ func openFile(fileName string) *os.File {
 }
 
 func init() {
-	DB = database.NewDatabase()
 	importCmd.Flags().StringVarP(&filePath, "filepath", "f", "", "Path to the file to import")
 	importCmd.Flags().BoolVarP(&mailFlag, "mail", "m", false, "Import the last expenses sent by mail")
 	RootCmd.AddCommand(importCmd)

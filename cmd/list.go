@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/magleff/gobro/database"
 	"github.com/magleff/gobro/features/budget"
 	"github.com/magleff/gobro/features/expense"
 	"github.com/magleff/gobro/features/expensefixed"
@@ -43,14 +42,12 @@ var listCmd = &cobra.Command{
 	Short: "List something",
 	Long:  `List something`,
 	Run: func(cmd *cobra.Command, args []string) {
-		DB := database.NewDatabase()
-
 		if typeOfExpense == "fixed" {
-			controller := expensefixed.NewController(DB)
+			controller := expensefixed.NewExpenseFixedController()
 			expensesFixed := controller.ListExpensesFixed()
 			displayExpensesFixed(expensesFixed)
 		} else {
-			budgetController := budget.NewController(DB)
+			budgetController := budget.NewBudgetController()
 			currentBudget := budgetController.CurrentBudget()
 			displayBudgetExpenses(*currentBudget)
 		}

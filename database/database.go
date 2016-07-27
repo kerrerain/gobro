@@ -3,38 +3,48 @@ package database
 import (
 	"gopkg.in/mgo.v2"
 	"log"
+	"sync"
 	"time"
 )
 
-type Database struct {
-	mainSession *mgo.Session
+var session Session
+var database Database
+var once sync.Once
+
+type Database interface {
+	DialDatabase() Session
 }
 
-func NewDatabase() *Database {
-	instance := new(Database)
-	instance.mainSession = CreateSession()
-	return instance
+func GetSession() Session {
+	once.Do(func() {
+		session = database.DialDatabase()
+	})
+	return session
 }
 
-func (db Database) Session() *mgo.Session {
-	return db.mainSession.Copy()
+func InitDatabase() {
+	database = MgoDatabase{}
 }
 
-func (db Database) Collection(session *mgo.Session, name string) *mgo.Collection {
-	return session.DB("").C(name)
-}
+/*
+	Implementation
+*/
 
-// As seen in http://blog.mongodb.org/post/80579086742/running-mongodb-queries-concurrently-with-go
-func CreateSession() *mgo.Session {
-	mongoDBDialInfo := &mgo.DialInfo{
+type MgoDatabase struct{}
+
+func (self MgoDatabase) DialDatabase() Session {
+	var err error
+	var mgoSession *mgo.Session
+
+	info := &mgo.DialInfo{
 		Addrs:    []string{"localhost:27017"},
-		Timeout:  60 * time.Second,
-		Database: "gobro"}
-	// Create a session which maintains a pool of socket connections
-	// to our MongoDB.
-	mongoSession, err := mgo.DialWithInfo(mongoDBDialInfo)
+		Database: "gobro",
+		Timeout:  60 * time.Second}
+
+	mgoSession, err = mgo.DialWithInfo(info)
 	if err != nil {
 		log.Fatalf("CreateSession: %s\n", err)
 	}
-	return mongoSession
+
+	return MgoSession{mgoSession}
 }

@@ -8,30 +8,23 @@ import (
 )
 
 type BudgetDatastore struct {
-	DB *database.Database
-}
-
-func NewDatastore(DB *database.Database) *BudgetDatastore {
-	instance := new(BudgetDatastore)
-	instance.DB = DB
-	return instance
+	database.Datastore
 }
 
 func (self BudgetDatastore) CreateBudget(expensesFixed []expense.Expense, balance string) {
-	session := self.DB.Session()
-	self.DB.Collection(session, "budget").Insert(NewBudgetWithExpensesFixed(expensesFixed, balance))
-	defer session.Close()
+	self.ExecuteInSession(func() {
+		self.Collection("budget").Insert(NewBudgetWithExpensesFixed(expensesFixed, balance))
+	})
 }
 
 // Gives the active budget sheet, or a nil value if currently there isn't one
 func (self BudgetDatastore) CurrentBudget() *Budget {
 	var currentBudget *Budget
-
-	session := self.DB.Session()
 	var budgetSheets []Budget
-	self.DB.Collection(session, "budget").Find(bson.M{"active": true}).All(&budgetSheets)
 
-	defer session.Close()
+	self.ExecuteInSession(func() {
+		self.Collection("budget").Find(bson.M{"active": true}).All(&budgetSheets)
+	})
 
 	if len(budgetSheets) > 1 {
 		log.Fatal("There are more than one active budget!")
@@ -46,7 +39,7 @@ func (self BudgetDatastore) CurrentBudget() *Budget {
 }
 
 func (self BudgetDatastore) Save(budget Budget) {
-	session := self.DB.Session()
-	self.DB.Collection(session, "budget").UpdateId(budget.ID, budget)
-	defer session.Close()
+	self.ExecuteInSession(func() {
+		self.Collection("budget").UpdateId(budget.ID, budget)
+	})
 }

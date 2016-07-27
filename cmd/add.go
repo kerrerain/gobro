@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"github.com/magleff/gobro/database"
 	"github.com/magleff/gobro/features/budget"
 	"github.com/magleff/gobro/features/expensefixed"
 	"github.com/spf13/cobra"
@@ -26,13 +25,12 @@ var addCmd = &cobra.Command{
 	Long:  `Add something`,
 	Run: func(cmd *cobra.Command, args []string) {
 		amount, description := parseArguments(args)
-		DB := database.NewDatabase()
 
 		if typeOfExpense == "fixed" {
-			controller := expensefixed.NewController(DB)
+			controller := expensefixed.NewExpenseFixedController()
 			controller.CreateExpenseFixed(amount, description)
 		} else {
-			budgetController := budget.NewController(DB)
+			budgetController := budget.NewBudgetController()
 			budgetController.AddExpenseToCurrentBudget(amount, description)
 		}
 	},

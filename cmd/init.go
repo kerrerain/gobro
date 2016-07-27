@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"github.com/magleff/gobro/database"
 	"github.com/magleff/gobro/features/budget"
 	"github.com/spf13/cobra"
 )
@@ -15,8 +14,7 @@ var initCmd = &cobra.Command{
 		if len(args) > 0 {
 			balance = args[0]
 		}
-		DB := database.NewDatabase()
-		controller := budget.NewController(DB)
+		controller := budget.NewBudgetController()
 		if !pristine {
 			controller.CreateBudget(balance)
 		} else {

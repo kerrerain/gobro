@@ -1,32 +1,31 @@
 package expensefixed
 
 import (
-	"github.com/magleff/gobro/database"
 	"github.com/magleff/gobro/features/expense"
 	"log"
 	"strconv"
 )
 
 type ExpenseFixedController struct {
-	Datastore *ExpenseFixedDataStore
+	ExpenseFixedDatastore *ExpenseFixedDatastore
 }
 
-func NewController(DB *database.Database) *ExpenseFixedController {
+func NewExpenseFixedController() *ExpenseFixedController {
 	instance := new(ExpenseFixedController)
-	instance.Datastore = NewDatastore(DB)
+	instance.ExpenseFixedDatastore = new(ExpenseFixedDatastore)
 	return instance
 }
 
 func (self ExpenseFixedController) CreateExpenseFixed(amount string, description string) {
-	self.Datastore.CreateExpenseFixed(*expense.NewExpense(amount, description))
+	self.ExpenseFixedDatastore.CreateExpenseFixed(*expense.NewExpense(amount, description))
 }
 
 func (self ExpenseFixedController) ListExpensesFixed() []expense.Expense {
-	return self.Datastore.ListExpensesFixed()
+	return self.ExpenseFixedDatastore.ListExpensesFixed()
 }
 
 func (self ExpenseFixedController) RemoveExpenseFixed(index string) {
-	self.Datastore.RemoveExpenseFixed(parseIndex(index))
+	self.ExpenseFixedDatastore.RemoveExpenseFixed(parseIndex(index))
 }
 
 func parseIndex(index string) int32 {

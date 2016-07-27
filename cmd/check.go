@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/magleff/gobro/database"
 	"github.com/magleff/gobro/features/budget"
 	"github.com/magleff/gobro/features/expense"
 	"github.com/spf13/cobra"
@@ -56,8 +55,7 @@ var checkCommand = &cobra.Command{
 	Short: "Check the expenses",
 	Long:  `Check the expenses`,
 	Run: func(cmd *cobra.Command, args []string) {
-		DB := database.NewDatabase()
-		budgetController := budget.NewController(DB)
+		budgetController := budget.NewBudgetController()
 		currentBudget := budgetController.CurrentBudget()
 		expenses := currentBudget.Expenses
 
