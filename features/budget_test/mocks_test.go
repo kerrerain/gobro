@@ -7,7 +7,7 @@ import (
 )
 
 type BudgetDatastore interface {
-	CreateBudget([]expense.Expense, string)
+	CreateBudget(string, []expense.Expense)
 	CurrentBudget() *budgetPackage.Budget
 	Save(*budgetPackage.Budget)
 }
@@ -16,13 +16,17 @@ type MockBudgetDatastore struct {
 	mock.Mock
 }
 
-func (m *MockBudgetDatastore) CreateBudget(expenses []expense.Expense, initialBalance string) {
-	m.Called(expenses, initialBalance)
+func (m *MockBudgetDatastore) CreateBudget(initialBalance string, expenses []expense.Expense) {
+	m.Called(initialBalance, expenses)
 }
 
 func (m *MockBudgetDatastore) CurrentBudget() *budgetPackage.Budget {
 	args := m.Called()
-	return args.Get(0).(*budgetPackage.Budget)
+	if budget := args.Get(0); budget == nil {
+		return nil
+	} else {
+		return budget.(*budgetPackage.Budget)
+	}
 }
 
 func (m *MockBudgetDatastore) Save(budget *budgetPackage.Budget) {

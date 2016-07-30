@@ -16,9 +16,9 @@ var initCmd = &cobra.Command{
 		}
 		controller := budget.NewBudgetController()
 		if !pristine {
-			controller.CreateBudget(balance)
+			controller.CreateBudgetWithFixedExpenses(balance)
 		} else {
-			controller.CreateBudgetWithoutExpensesFixed(balance)
+			controller.CreatePristineBudget(balance)
 		}
 	},
 }

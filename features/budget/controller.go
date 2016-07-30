@@ -1,20 +1,21 @@
 package budget
 
 import (
+	"errors"
 	"github.com/magleff/gobro/features/expense"
 	"github.com/magleff/gobro/features/expensefixed"
-	"log"
 	"time"
 )
 
 type BudgetController interface {
-	CreateBudget(string)
-	CreateBudgetWithoutExpensesFixed(string)
+	CreatePristineBudget(string) error
+	CreateBudgetWithFixedExpenses(string) error
+	CreateBudget(string, []expense.Expense) error
 	SaveBudget(*Budget)
 	CurrentBudget() *Budget
-	AddExpenseToCurrentBudget(string, string)
+	AddExpenseToCurrentBudget(string, string) error
 	AddRawExpensesToCurrentBudget([]expense.Expense)
-	CloseCurrentBudget()
+	CloseCurrentBudget() error
 }
 
 type BudgetControllerImpl struct {
@@ -29,22 +30,23 @@ func NewBudgetController() BudgetController {
 	return instance
 }
 
-func (self *BudgetControllerImpl) CreateBudget(balance string) {
-	expensesFixed := self.ExpenseFixedDatastore.ListExpensesFixed()
-
-	if self.BudgetDatastore.CurrentBudget() == nil {
-		self.BudgetDatastore.CreateBudget(expensesFixed, balance)
-	} else {
-		log.Fatal("There's already an active budget, use 'close' to close the current budget or 'rm' to remove it")
-	}
+func (self *BudgetControllerImpl) CreatePristineBudget(balance string) error {
+	return self.CreateBudget(balance, []expense.Expense{})
 }
 
-func (self *BudgetControllerImpl) CreateBudgetWithoutExpensesFixed(balance string) {
+func (self *BudgetControllerImpl) CreateBudgetWithFixedExpenses(balance string) error {
+	expensesFixed := self.ExpenseFixedDatastore.ListExpensesFixed()
+	return self.CreateBudget(balance, expensesFixed)
+}
+
+func (self *BudgetControllerImpl) CreateBudget(balance string, expenses []expense.Expense) error {
 	if self.BudgetDatastore.CurrentBudget() == nil {
-		self.BudgetDatastore.CreateBudget([]expense.Expense{}, balance)
+		self.BudgetDatastore.CreateBudget(balance, expenses)
 	} else {
-		log.Fatal("There's already an active budget, use 'close' to close the current budget or 'rm' to remove it")
+		return errors.New(`There's already an active budget,
+			use 'close' to close the current budget or 'rm' to remove it`)
 	}
+	return nil
 }
 
 func (self *BudgetControllerImpl) SaveBudget(budget *Budget) {
@@ -55,10 +57,16 @@ func (self *BudgetControllerImpl) CurrentBudget() *Budget {
 	return self.BudgetDatastore.CurrentBudget()
 }
 
-func (self *BudgetControllerImpl) AddExpenseToCurrentBudget(amount string, description string) {
+func (self *BudgetControllerImpl) AddExpenseToCurrentBudget(amount string, description string) error {
 	currentBudget := self.BudgetDatastore.CurrentBudget()
-	currentBudget.Expenses = append(currentBudget.Expenses, *expense.NewExpense(amount, description))
-	self.BudgetDatastore.Save(currentBudget)
+	if currentBudget != nil {
+		currentBudget.Expenses = append(currentBudget.Expenses,
+			*expense.NewExpense(amount, description))
+		self.BudgetDatastore.Save(currentBudget)
+	} else {
+		return errors.New("There is not any active budget.")
+	}
+	return nil
 }
 
 func (self *BudgetControllerImpl) AddRawExpensesToCurrentBudget(expenses []expense.Expense) {
@@ -69,13 +77,14 @@ func (self *BudgetControllerImpl) AddRawExpensesToCurrentBudget(expenses []expen
 	self.BudgetDatastore.Save(currentBudget)
 }
 
-func (self *BudgetControllerImpl) CloseCurrentBudget() {
+func (self *BudgetControllerImpl) CloseCurrentBudget() error {
 	currentBudget := self.BudgetDatastore.CurrentBudget()
-	if currentBudget == nil {
-		log.Fatal("There is not any active budget")
-	} else {
+	if currentBudget != nil {
 		currentBudget.Active = false
 		currentBudget.EndDate = time.Now()
 		self.BudgetDatastore.Save(currentBudget)
+	} else {
+		return errors.New("There is not any active budget.")
 	}
+	return nil
 }
