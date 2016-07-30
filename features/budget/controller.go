@@ -7,19 +7,29 @@ import (
 	"time"
 )
 
-type BudgetController struct {
-	BudgetDatastore       *BudgetDatastore
+type BudgetController interface {
+	CreateBudget(string)
+	CreateBudgetWithoutExpensesFixed(string)
+	SaveBudget(*Budget)
+	CurrentBudget() *Budget
+	AddExpenseToCurrentBudget(string, string)
+	AddRawExpensesToCurrentBudget([]expense.Expense)
+	CloseCurrentBudget()
+}
+
+type BudgetControllerImpl struct {
+	BudgetDatastore       BudgetDatastore
 	ExpenseFixedDatastore *expensefixed.ExpenseFixedDatastore
 }
 
-func NewBudgetController() *BudgetController {
-	instance := new(BudgetController)
-	instance.BudgetDatastore = new(BudgetDatastore)
+func NewBudgetController() BudgetController {
+	instance := new(BudgetControllerImpl)
+	instance.BudgetDatastore = new(BudgetDatastoreImpl)
 	instance.ExpenseFixedDatastore = new(expensefixed.ExpenseFixedDatastore)
 	return instance
 }
 
-func (self *BudgetController) CreateBudget(balance string) {
+func (self *BudgetControllerImpl) CreateBudget(balance string) {
 	expensesFixed := self.ExpenseFixedDatastore.ListExpensesFixed()
 
 	if self.BudgetDatastore.CurrentBudget() == nil {
@@ -29,11 +39,7 @@ func (self *BudgetController) CreateBudget(balance string) {
 	}
 }
 
-func (self *BudgetController) SaveBudget(budget *Budget) {
-	self.BudgetDatastore.Save(*budget)
-}
-
-func (self *BudgetController) CreateBudgetWithoutExpensesFixed(balance string) {
+func (self *BudgetControllerImpl) CreateBudgetWithoutExpensesFixed(balance string) {
 	if self.BudgetDatastore.CurrentBudget() == nil {
 		self.BudgetDatastore.CreateBudget([]expense.Expense{}, balance)
 	} else {
@@ -41,17 +47,21 @@ func (self *BudgetController) CreateBudgetWithoutExpensesFixed(balance string) {
 	}
 }
 
-func (self *BudgetController) CurrentBudget() *Budget {
+func (self *BudgetControllerImpl) SaveBudget(budget *Budget) {
+	self.BudgetDatastore.Save(*budget)
+}
+
+func (self *BudgetControllerImpl) CurrentBudget() *Budget {
 	return self.BudgetDatastore.CurrentBudget()
 }
 
-func (self *BudgetController) AddExpenseToCurrentBudget(amount string, description string) {
+func (self *BudgetControllerImpl) AddExpenseToCurrentBudget(amount string, description string) {
 	currentBudget := self.BudgetDatastore.CurrentBudget()
 	currentBudget.Expenses = append(currentBudget.Expenses, *expense.NewExpense(amount, description))
 	self.BudgetDatastore.Save(*currentBudget)
 }
 
-func (self *BudgetController) AddRawExpensesToCurrentBudget(expenses []expense.Expense) {
+func (self *BudgetControllerImpl) AddRawExpensesToCurrentBudget(expenses []expense.Expense) {
 	currentBudget := self.BudgetDatastore.CurrentBudget()
 	for _, entry := range expenses {
 		currentBudget.Expenses = append(currentBudget.Expenses, entry)
@@ -59,7 +69,7 @@ func (self *BudgetController) AddRawExpensesToCurrentBudget(expenses []expense.E
 	self.BudgetDatastore.Save(*currentBudget)
 }
 
-func (self *BudgetController) CloseCurrentBudget() {
+func (self *BudgetControllerImpl) CloseCurrentBudget() {
 	currentBudget := self.BudgetDatastore.CurrentBudget()
 	if currentBudget == nil {
 		log.Fatal("There is not any active budget")

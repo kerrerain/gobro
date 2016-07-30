@@ -7,18 +7,24 @@ import (
 	"log"
 )
 
-type BudgetDatastore struct {
+type BudgetDatastore interface {
+	CreateBudget([]expense.Expense, string)
+	CurrentBudget() *Budget
+	Save(Budget)
+}
+
+type BudgetDatastoreImpl struct {
 	database.Datastore
 }
 
-func (self BudgetDatastore) CreateBudget(expensesFixed []expense.Expense, balance string) {
+func (self BudgetDatastoreImpl) CreateBudget(expenses []expense.Expense, balance string) {
 	self.ExecuteInSession(func() {
-		self.Collection("budget").Insert(NewBudgetWithExpensesFixed(expensesFixed, balance))
+		self.Collection("budget").Insert(NewBudgetWithExpensesFixed(expenses, balance))
 	})
 }
 
 // Gives the active budget sheet, or a nil value if currently there isn't one
-func (self BudgetDatastore) CurrentBudget() *Budget {
+func (self BudgetDatastoreImpl) CurrentBudget() *Budget {
 	var currentBudget *Budget
 	var budgetSheets []Budget
 
@@ -38,7 +44,7 @@ func (self BudgetDatastore) CurrentBudget() *Budget {
 	return currentBudget
 }
 
-func (self BudgetDatastore) Save(budget Budget) {
+func (self BudgetDatastoreImpl) Save(budget Budget) {
 	self.ExecuteInSession(func() {
 		self.Collection("budget").UpdateId(budget.ID, budget)
 	})
