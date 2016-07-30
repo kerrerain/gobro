@@ -10,7 +10,7 @@ import (
 type BudgetDatastore interface {
 	CreateBudget([]expense.Expense, string)
 	CurrentBudget() *Budget
-	Save(Budget)
+	Save(*Budget)
 }
 
 type BudgetDatastoreImpl struct {
@@ -44,8 +44,8 @@ func (self BudgetDatastoreImpl) CurrentBudget() *Budget {
 	return currentBudget
 }
 
-func (self BudgetDatastoreImpl) Save(budget Budget) {
+func (self BudgetDatastoreImpl) Save(budget *Budget) {
 	self.ExecuteInSession(func() {
-		self.Collection("budget").UpdateId(budget.ID, budget)
+		self.Collection("budget").UpdateId(budget.ID, *budget)
 	})
 }

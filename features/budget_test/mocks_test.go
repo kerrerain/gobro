@@ -9,7 +9,7 @@ import (
 type BudgetDatastore interface {
 	CreateBudget([]expense.Expense, string)
 	CurrentBudget() *budgetPackage.Budget
-	Save(budgetPackage.Budget)
+	Save(*budgetPackage.Budget)
 }
 
 type MockBudgetDatastore struct {
@@ -25,6 +25,6 @@ func (m *MockBudgetDatastore) CurrentBudget() *budgetPackage.Budget {
 	return args.Get(0).(*budgetPackage.Budget)
 }
 
-func (m *MockBudgetDatastore) Save(budget budgetPackage.Budget) {
+func (m *MockBudgetDatastore) Save(budget *budgetPackage.Budget) {
 	m.Called(budget)
 }

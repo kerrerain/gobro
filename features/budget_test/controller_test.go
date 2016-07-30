@@ -19,3 +19,20 @@ func TestCurrentBudget(t *testing.T) {
 	// Assert
 	budgetDatastore.AssertCalled(t, "CurrentBudget")
 }
+
+func TestSaveBudget(t *testing.T) {
+	// Arrange
+	budgetDatastore := new(MockBudgetDatastore)
+	budgetDatastore.On("Save", &budgetPackage.Budget{}).Return()
+
+	controller := new(budgetPackage.BudgetControllerImpl)
+	controller.BudgetDatastore = budgetDatastore
+
+	budget := &budgetPackage.Budget{}
+
+	// Act
+	controller.SaveBudget(budget)
+
+	// Assert
+	budgetDatastore.AssertCalled(t, "Save", budget)
+}

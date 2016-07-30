@@ -48,7 +48,7 @@ func (self *BudgetControllerImpl) CreateBudgetWithoutExpensesFixed(balance strin
 }
 
 func (self *BudgetControllerImpl) SaveBudget(budget *Budget) {
-	self.BudgetDatastore.Save(*budget)
+	self.BudgetDatastore.Save(budget)
 }
 
 func (self *BudgetControllerImpl) CurrentBudget() *Budget {
@@ -58,7 +58,7 @@ func (self *BudgetControllerImpl) CurrentBudget() *Budget {
 func (self *BudgetControllerImpl) AddExpenseToCurrentBudget(amount string, description string) {
 	currentBudget := self.BudgetDatastore.CurrentBudget()
 	currentBudget.Expenses = append(currentBudget.Expenses, *expense.NewExpense(amount, description))
-	self.BudgetDatastore.Save(*currentBudget)
+	self.BudgetDatastore.Save(currentBudget)
 }
 
 func (self *BudgetControllerImpl) AddRawExpensesToCurrentBudget(expenses []expense.Expense) {
@@ -66,7 +66,7 @@ func (self *BudgetControllerImpl) AddRawExpensesToCurrentBudget(expenses []expen
 	for _, entry := range expenses {
 		currentBudget.Expenses = append(currentBudget.Expenses, entry)
 	}
-	self.BudgetDatastore.Save(*currentBudget)
+	self.BudgetDatastore.Save(currentBudget)
 }
 
 func (self *BudgetControllerImpl) CloseCurrentBudget() {
@@ -76,6 +76,6 @@ func (self *BudgetControllerImpl) CloseCurrentBudget() {
 	} else {
 		currentBudget.Active = false
 		currentBudget.EndDate = time.Now()
-		self.BudgetDatastore.Save(*currentBudget)
+		self.BudgetDatastore.Save(currentBudget)
 	}
 }
