@@ -126,6 +126,54 @@ func TestAddExpenseToCurrentBudgetNil(t *testing.T) {
 	assert.Error(t, err, "Should fail if there is not any active budget.")
 }
 
+func TestAddRawExpensesToCurrentBudget(t *testing.T) {
+	// Arrange
+	expenses := []expense.Expense{
+		{Amount: float32(-25.30)},
+		{Amount: float32(-27.28)},
+	}
+
+	currentBudget := &budgetPackage.Budget{}
+	currentBudget.Expenses = []expense.Expense{}
+
+	budgetDatastore := new(MockBudgetDatastore)
+	budgetDatastore.On("CurrentBudget").Return(currentBudget)
+	budgetDatastore.On("Save", currentBudget).Return()
+
+	controller := new(budgetPackage.BudgetControllerImpl)
+	controller.BudgetDatastore = budgetDatastore
+
+	// Act
+	err := controller.AddRawExpensesToCurrentBudget(expenses)
+
+	// Assert
+	budgetDatastore.AssertExpectations(t)
+	assert.Equal(t, 2, len(currentBudget.Expenses),
+		"Should add the expenses to the budget.")
+	assert.NoError(t, err, "Should not throw an error.")
+}
+
+func TestAddRawExpensesToCurrentBudgetNil(t *testing.T) {
+	// Arrange
+	expenses := []expense.Expense{
+		{Amount: float32(-25.30)},
+		{Amount: float32(-27.28)},
+	}
+
+	budgetDatastore := new(MockBudgetDatastore)
+	budgetDatastore.On("CurrentBudget").Return(nil)
+
+	controller := new(budgetPackage.BudgetControllerImpl)
+	controller.BudgetDatastore = budgetDatastore
+
+	// Act
+	err := controller.AddRawExpensesToCurrentBudget(expenses)
+
+	// Assert
+	budgetDatastore.AssertExpectations(t)
+	assert.Error(t, err, "Should fail if there is not any active budget.")
+}
+
 func TestCloseCurrentBudget(t *testing.T) {
 	// Arrange
 	currentBudget := &budgetPackage.Budget{}

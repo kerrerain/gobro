@@ -14,7 +14,7 @@ type BudgetController interface {
 	SaveBudget(*Budget)
 	CurrentBudget() *Budget
 	AddExpenseToCurrentBudget(string, string) error
-	AddRawExpensesToCurrentBudget([]expense.Expense)
+	AddRawExpensesToCurrentBudget([]expense.Expense) error
 	CloseCurrentBudget() error
 }
 
@@ -30,21 +30,38 @@ func NewBudgetController() BudgetController {
 	return instance
 }
 
+// Creates a budget with an initial balance (mandatory) and does not compute
+// the initial expenses from a payment schedule.
+//
+// Returns an error if there is not any active budget for the moment.
+// Returns and error if the initial balance is not set or invalid.
 func (self *BudgetControllerImpl) CreatePristineBudget(balance string) error {
 	return self.CreateBudget(balance, []expense.Expense{})
 }
 
+// Creates a budget with an initial balance (mandatory) and computes
+// the initial expenses from a payment schedule.
+//
+// Returns an error if there is not any active budget for the moment.
+// Returns and error if the initial balance is not set or invalid.
 func (self *BudgetControllerImpl) CreateBudgetWithFixedExpenses(balance string) error {
 	expensesFixed := self.ExpenseFixedDatastore.ListExpensesFixed()
 	return self.CreateBudget(balance, expensesFixed)
 }
 
+// Creates a new budget with an initial balance (mandatory), and sets the initial expenses.
+//
+// Returns an error if there is not any active budget for the moment.
+// Returns and error if the initial balance is not set or invalid.
 func (self *BudgetControllerImpl) CreateBudget(balance string, expenses []expense.Expense) error {
+	if balance == "" {
+		return errors.New("The initial balance of the budget is mandatory.")
+	}
 	if self.BudgetDatastore.CurrentBudget() == nil {
 		self.BudgetDatastore.CreateBudget(balance, expenses)
 	} else {
 		return errors.New(`There's already an active budget,
-			use 'close' to close the current budget or 'rm' to remove it`)
+			use 'close' to close the current budget or 'rm' to remove it.`)
 	}
 	return nil
 }
@@ -69,12 +86,17 @@ func (self *BudgetControllerImpl) AddExpenseToCurrentBudget(amount string, descr
 	return nil
 }
 
-func (self *BudgetControllerImpl) AddRawExpensesToCurrentBudget(expenses []expense.Expense) {
+func (self *BudgetControllerImpl) AddRawExpensesToCurrentBudget(expenses []expense.Expense) error {
 	currentBudget := self.BudgetDatastore.CurrentBudget()
-	for _, entry := range expenses {
-		currentBudget.Expenses = append(currentBudget.Expenses, entry)
+	if currentBudget != nil {
+		for _, entry := range expenses {
+			currentBudget.Expenses = append(currentBudget.Expenses, entry)
+		}
+		self.BudgetDatastore.Save(currentBudget)
+	} else {
+		return errors.New("There is not any active budget.")
 	}
-	self.BudgetDatastore.Save(currentBudget)
+	return nil
 }
 
 func (self *BudgetControllerImpl) CloseCurrentBudget() error {
