@@ -6,12 +6,6 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type BudgetDatastore interface {
-	CreateBudget(float32, []expense.Expense)
-	CurrentBudget() *budgetPackage.Budget
-	Save(*budgetPackage.Budget)
-}
-
 type MockBudgetDatastore struct {
 	mock.Mock
 }

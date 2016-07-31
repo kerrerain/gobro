@@ -64,8 +64,8 @@ func (self *BudgetControllerImpl) CreateBudget(balance string, expenses []expens
 	if self.BudgetDatastore.CurrentBudget() == nil {
 		self.BudgetDatastore.CreateBudget(parsedBalance, expenses)
 	} else {
-		return errors.New(`There's already an active budget,
-			use 'close' to close the current budget or 'rm' to remove it.`)
+		return errors.New("There's already an active budget, " +
+			"use 'close' to close the current budget or 'rm' to remove it.")
 	}
 
 	return nil
