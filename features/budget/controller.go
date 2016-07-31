@@ -36,7 +36,7 @@ func NewBudgetController() BudgetController {
 //
 // Returns an error if there is not any active budget for the moment.
 // Returns and error if the initial balance is not set or invalid.
-func (self *BudgetControllerImpl) CreatePristineBudget(balance string) error {
+func (self BudgetControllerImpl) CreatePristineBudget(balance string) error {
 	return self.CreateBudget(balance, []expense.Expense{})
 }
 
@@ -45,7 +45,7 @@ func (self *BudgetControllerImpl) CreatePristineBudget(balance string) error {
 //
 // Returns an error if there is not any active budget for the moment.
 // Returns and error if the initial balance is not set or invalid.
-func (self *BudgetControllerImpl) CreateBudgetWithFixedExpenses(balance string) error {
+func (self BudgetControllerImpl) CreateBudgetWithFixedExpenses(balance string) error {
 	expensesFixed := self.ExpenseFixedDatastore.ListExpensesFixed()
 	return self.CreateBudget(balance, expensesFixed)
 }
@@ -54,7 +54,7 @@ func (self *BudgetControllerImpl) CreateBudgetWithFixedExpenses(balance string) 
 //
 // Returns an error if there is not any active budget for the moment.
 // Returns and error if the initial balance is not set or invalid.
-func (self *BudgetControllerImpl) CreateBudget(balance string, expenses []expense.Expense) error {
+func (self BudgetControllerImpl) CreateBudget(balance string, expenses []expense.Expense) error {
 	parsedBalance, err := amount.ParseString(balance)
 
 	if err != nil {
@@ -71,15 +71,15 @@ func (self *BudgetControllerImpl) CreateBudget(balance string, expenses []expens
 	return nil
 }
 
-func (self *BudgetControllerImpl) SaveBudget(budget *Budget) {
+func (self BudgetControllerImpl) SaveBudget(budget *Budget) {
 	self.BudgetDatastore.Save(budget)
 }
 
-func (self *BudgetControllerImpl) CurrentBudget() *Budget {
+func (self BudgetControllerImpl) CurrentBudget() *Budget {
 	return self.BudgetDatastore.CurrentBudget()
 }
 
-func (self *BudgetControllerImpl) AddExpenseToCurrentBudget(amount string, description string) error {
+func (self BudgetControllerImpl) AddExpenseToCurrentBudget(amount string, description string) error {
 	currentBudget := self.BudgetDatastore.CurrentBudget()
 	if currentBudget != nil {
 		currentBudget.Expenses = append(currentBudget.Expenses,
@@ -91,7 +91,7 @@ func (self *BudgetControllerImpl) AddExpenseToCurrentBudget(amount string, descr
 	return nil
 }
 
-func (self *BudgetControllerImpl) AddRawExpensesToCurrentBudget(expenses []expense.Expense) error {
+func (self BudgetControllerImpl) AddRawExpensesToCurrentBudget(expenses []expense.Expense) error {
 	currentBudget := self.BudgetDatastore.CurrentBudget()
 	if currentBudget != nil {
 		for _, entry := range expenses {
@@ -104,7 +104,7 @@ func (self *BudgetControllerImpl) AddRawExpensesToCurrentBudget(expenses []expen
 	return nil
 }
 
-func (self *BudgetControllerImpl) CloseCurrentBudget() error {
+func (self BudgetControllerImpl) CloseCurrentBudget() error {
 	currentBudget := self.BudgetDatastore.CurrentBudget()
 	if currentBudget != nil {
 		currentBudget.Active = false

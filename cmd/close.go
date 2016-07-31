@@ -5,16 +5,28 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var closeCmd = &cobra.Command{
-	Use:   "close",
-	Short: "Close the budget",
-	Long:  `Close the budget`,
-	Run: func(cmd *cobra.Command, args []string) {
-		controller := budget.NewBudgetController()
-		controller.CloseCurrentBudget()
-	},
+type GobroCloseCommand struct {
+	Command          *cobra.Command
+	BudgetController budget.BudgetController
+}
+
+func (self *GobroCloseCommand) Init() {
+	self.Command = &cobra.Command{
+		Use:   "close",
+		Short: "Closes the current budget",
+		Long:  `Closes the current budget`,
+		RunE:  self.Run,
+	}
+	self.BudgetController = budget.NewBudgetController()
+}
+
+func (self *GobroCloseCommand) Run(cmd *cobra.Command, args []string) error {
+	self.BudgetController.CloseCurrentBudget()
+	return nil
 }
 
 func init() {
-	RootCmd.AddCommand(closeCmd)
+	command := GobroCloseCommand{}
+	command.Init()
+	RootCmd.AddCommand(command.Command)
 }

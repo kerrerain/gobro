@@ -10,11 +10,11 @@ type MockBudgetDatastore struct {
 	mock.Mock
 }
 
-func (m *MockBudgetDatastore) CreateBudget(initialBalance float32, expenses []expense.Expense) {
+func (m MockBudgetDatastore) CreateBudget(initialBalance float32, expenses []expense.Expense) {
 	m.Called(initialBalance, expenses)
 }
 
-func (m *MockBudgetDatastore) CurrentBudget() *budgetPackage.Budget {
+func (m MockBudgetDatastore) CurrentBudget() *budgetPackage.Budget {
 	args := m.Called()
 	if budget := args.Get(0); budget == nil {
 		return nil
@@ -23,6 +23,6 @@ func (m *MockBudgetDatastore) CurrentBudget() *budgetPackage.Budget {
 	}
 }
 
-func (m *MockBudgetDatastore) Save(budget *budgetPackage.Budget) {
+func (m MockBudgetDatastore) Save(budget *budgetPackage.Budget) {
 	m.Called(budget)
 }

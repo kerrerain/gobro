@@ -10,43 +10,43 @@ type MockBudgetController struct {
 	mock.Mock
 }
 
-func (m *MockBudgetController) CreatePristineBudget(str string) error {
+func (m MockBudgetController) CreatePristineBudget(str string) error {
 	args := m.Called(str)
 	return args.Error(0)
 }
 
-func (m *MockBudgetController) CreateBudgetWithFixedExpenses(str string) error {
+func (m MockBudgetController) CreateBudgetWithFixedExpenses(str string) error {
 	args := m.Called(str)
 	return args.Error(0)
 }
 
-func (m *MockBudgetController) CreateBudget(str string,
+func (m MockBudgetController) CreateBudget(str string,
 	expenses []expense.Expense) error {
 	args := m.Called(str, expenses)
 	return args.Error(0)
 }
 
-func (m *MockBudgetController) SaveBudget(budget *budget.Budget) {
+func (m MockBudgetController) SaveBudget(budget *budget.Budget) {
 	m.Called(budget)
 }
 
-func (m *MockBudgetController) CurrentBudget() *budget.Budget {
+func (m MockBudgetController) CurrentBudget() *budget.Budget {
 	args := m.Called()
 	return args.Get(0).(*budget.Budget)
 }
 
-func (m *MockBudgetController) AddExpenseToCurrentBudget(amount string,
+func (m MockBudgetController) AddExpenseToCurrentBudget(amount string,
 	description string) error {
 	args := m.Called(amount, description)
 	return args.Error(0)
 }
 
-func (m *MockBudgetController) AddRawExpensesToCurrentBudget(expenses []expense.Expense) error {
+func (m MockBudgetController) AddRawExpensesToCurrentBudget(expenses []expense.Expense) error {
 	args := m.Called(expenses)
 	return args.Error(0)
 }
 
-func (m *MockBudgetController) CloseCurrentBudget() error {
+func (m MockBudgetController) CloseCurrentBudget() error {
 	args := m.Called()
 	return args.Error(0)
 }

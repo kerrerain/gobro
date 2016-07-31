@@ -8,6 +8,16 @@ import (
 	"time"
 )
 
+func TestNewBudgetController(t *testing.T) {
+	// Arrange
+	// Act
+	controller := budgetPackage.NewBudgetController().(*budgetPackage.BudgetControllerImpl)
+
+	// Assert
+	assert.NotNil(t, controller.BudgetDatastore, "Should initialize BudgetDatastore.")
+	assert.NotNil(t, controller.ExpenseFixedDatastore, "Should initialize ExpenseFixedDatastore.")
+}
+
 func TestCreateBudget(t *testing.T) {
 	// Arrange
 	expenses := []expense.Expense{}
