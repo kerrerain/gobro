@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/magleff/gobro/features/expense"
 	"github.com/magleff/gobro/features/expensefixed"
+	"github.com/magleff/gobro/utils/amount"
 	"time"
 )
 
@@ -54,15 +55,19 @@ func (self *BudgetControllerImpl) CreateBudgetWithFixedExpenses(balance string) 
 // Returns an error if there is not any active budget for the moment.
 // Returns and error if the initial balance is not set or invalid.
 func (self *BudgetControllerImpl) CreateBudget(balance string, expenses []expense.Expense) error {
-	if balance == "" {
-		return errors.New("The initial balance of the budget is mandatory.")
+	parsedBalance, err := amount.ParseString(balance)
+
+	if err != nil {
+		return err
 	}
+
 	if self.BudgetDatastore.CurrentBudget() == nil {
-		self.BudgetDatastore.CreateBudget(balance, expenses)
+		self.BudgetDatastore.CreateBudget(parsedBalance, expenses)
 	} else {
 		return errors.New(`There's already an active budget,
 			use 'close' to close the current budget or 'rm' to remove it.`)
 	}
+
 	return nil
 }
 

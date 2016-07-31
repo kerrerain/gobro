@@ -12,10 +12,11 @@ func TestCreateBudget(t *testing.T) {
 	// Arrange
 	expenses := []expense.Expense{}
 	balance := "100.25"
+	parsedBalance := float32(100.25)
 
 	budgetDatastore := new(MockBudgetDatastore)
 	budgetDatastore.On("CurrentBudget").Return(nil)
-	budgetDatastore.On("CreateBudget", balance, expenses).Return()
+	budgetDatastore.On("CreateBudget", parsedBalance, expenses).Return()
 
 	controller := new(budgetPackage.BudgetControllerImpl)
 	controller.BudgetDatastore = budgetDatastore
@@ -26,6 +27,20 @@ func TestCreateBudget(t *testing.T) {
 	// Assert
 	budgetDatastore.AssertExpectations(t)
 	assert.NoError(t, err, "Should not throw an error.")
+}
+
+func TestCreateBudgetBadBalance(t *testing.T) {
+	// Arrange
+	expenses := []expense.Expense{}
+	balance := "0az15e"
+
+	controller := new(budgetPackage.BudgetControllerImpl)
+
+	// Act
+	err := controller.CreateBudget(balance, expenses)
+
+	// Assert
+	assert.Error(t, err, "Should throw an error if the balance is invalid.")
 }
 
 func TestCreateBudgetAlreadyAnActiveBudget(t *testing.T) {

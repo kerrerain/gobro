@@ -8,7 +8,7 @@ import (
 )
 
 type BudgetDatastore interface {
-	CreateBudget(string, []expense.Expense)
+	CreateBudget(float32, []expense.Expense)
 	CurrentBudget() *Budget
 	Save(*Budget)
 }
@@ -17,9 +17,9 @@ type BudgetDatastoreImpl struct {
 	database.Datastore
 }
 
-func (self BudgetDatastoreImpl) CreateBudget(balance string, expenses []expense.Expense) {
+func (self BudgetDatastoreImpl) CreateBudget(balance float32, expenses []expense.Expense) {
 	self.ExecuteInSession(func() {
-		self.Collection("budget").Insert(NewBudgetWithExpensesFixed(expenses, balance))
+		self.Collection("budget").Insert(NewBudget(balance, expenses))
 	})
 }
 
