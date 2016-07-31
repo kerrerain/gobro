@@ -50,3 +50,8 @@ func (m MockBudgetController) CloseCurrentBudget() error {
 	args := m.Called()
 	return args.Error(0)
 }
+
+func (m MockBudgetController) ComputeBudgetInfo() (*budget.BudgetInfo, error) {
+	args := m.Called()
+	return args.Get(0).(*budget.BudgetInfo), args.Error(1)
+}

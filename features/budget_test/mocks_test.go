@@ -3,6 +3,7 @@ package budget_test
 import (
 	budgetPackage "github.com/magleff/gobro/features/budget"
 	"github.com/magleff/gobro/features/expense"
+	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -10,7 +11,8 @@ type MockBudgetDatastore struct {
 	mock.Mock
 }
 
-func (m MockBudgetDatastore) CreateBudget(initialBalance float32, expenses []expense.Expense) {
+func (m MockBudgetDatastore) CreateBudget(initialBalance decimal.Decimal,
+	expenses []expense.Expense) {
 	m.Called(initialBalance, expenses)
 }
 

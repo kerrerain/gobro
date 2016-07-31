@@ -5,6 +5,7 @@ import (
 	"github.com/magleff/gobro/features/expense"
 	"github.com/magleff/gobro/features/expensefixed"
 	"github.com/magleff/gobro/utils/amount"
+	expenseUtils "github.com/magleff/gobro/utils/expense"
 	"time"
 )
 
@@ -17,6 +18,7 @@ type BudgetController interface {
 	AddExpenseToCurrentBudget(string, string) error
 	AddRawExpensesToCurrentBudget([]expense.Expense) error
 	CloseCurrentBudget() error
+	ComputeBudgetInfo() (*BudgetInfo, error)
 }
 
 type BudgetControllerImpl struct {
@@ -81,6 +83,7 @@ func (self BudgetControllerImpl) CurrentBudget() *Budget {
 
 func (self BudgetControllerImpl) AddExpenseToCurrentBudget(amount string, description string) error {
 	currentBudget := self.BudgetDatastore.CurrentBudget()
+
 	if currentBudget != nil {
 		currentBudget.Expenses = append(currentBudget.Expenses,
 			*expense.NewExpense(amount, description))
@@ -88,11 +91,13 @@ func (self BudgetControllerImpl) AddExpenseToCurrentBudget(amount string, descri
 	} else {
 		return errors.New("There is not any active budget.")
 	}
+
 	return nil
 }
 
 func (self BudgetControllerImpl) AddRawExpensesToCurrentBudget(expenses []expense.Expense) error {
 	currentBudget := self.BudgetDatastore.CurrentBudget()
+
 	if currentBudget != nil {
 		for _, entry := range expenses {
 			currentBudget.Expenses = append(currentBudget.Expenses, entry)
@@ -101,11 +106,13 @@ func (self BudgetControllerImpl) AddRawExpensesToCurrentBudget(expenses []expens
 	} else {
 		return errors.New("There is not any active budget.")
 	}
+
 	return nil
 }
 
 func (self BudgetControllerImpl) CloseCurrentBudget() error {
 	currentBudget := self.BudgetDatastore.CurrentBudget()
+
 	if currentBudget != nil {
 		currentBudget.Active = false
 		currentBudget.EndDate = time.Now()
@@ -113,5 +120,25 @@ func (self BudgetControllerImpl) CloseCurrentBudget() error {
 	} else {
 		return errors.New("There is not any active budget.")
 	}
+
 	return nil
+}
+
+func (self BudgetControllerImpl) ComputeBudgetInfo() (*BudgetInfo, error) {
+	budgetInfo := new(BudgetInfo)
+	currentBudget := self.BudgetDatastore.CurrentBudget()
+
+	if currentBudget != nil {
+		budgetInfo.InitialBalance = currentBudget.InitialBalance
+		budgetInfo.TotalEarnings = expenseUtils.ComputeTotalEarnings(currentBudget.Expenses)
+		budgetInfo.TotalExpenses = expenseUtils.ComputeTotalExpenses(currentBudget.Expenses)
+		budgetInfo.TotalUncheckedExpenses = expenseUtils.ComputeTotalUncheckedExpenses(currentBudget.Expenses)
+		budgetInfo.Difference = budgetInfo.TotalEarnings.Add(budgetInfo.TotalExpenses)
+		budgetInfo.CurrentBalance = budgetInfo.InitialBalance.Add(budgetInfo.Difference)
+		budgetInfo.StartDate = currentBudget.StartDate
+	} else {
+		return budgetInfo, errors.New("There is not any active budget.")
+	}
+
+	return budgetInfo, nil
 }

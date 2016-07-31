@@ -3,12 +3,13 @@ package budget
 import (
 	"github.com/magleff/gobro/database"
 	"github.com/magleff/gobro/features/expense"
+	"github.com/shopspring/decimal"
 	"gopkg.in/mgo.v2/bson"
 	"log"
 )
 
 type BudgetDatastore interface {
-	CreateBudget(float32, []expense.Expense)
+	CreateBudget(decimal.Decimal, []expense.Expense)
 	CurrentBudget() *Budget
 	Save(*Budget)
 }
@@ -17,7 +18,7 @@ type BudgetDatastoreImpl struct {
 	database.Datastore
 }
 
-func (self BudgetDatastoreImpl) CreateBudget(balance float32, expenses []expense.Expense) {
+func (self BudgetDatastoreImpl) CreateBudget(balance decimal.Decimal, expenses []expense.Expense) {
 	self.ExecuteInSession(func() {
 		self.Collection("budget").Insert(NewBudget(balance, expenses))
 	})

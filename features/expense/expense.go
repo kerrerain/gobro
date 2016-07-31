@@ -2,6 +2,7 @@ package expense
 
 import (
 	amountUtils "github.com/magleff/gobro/utils/amount"
+	"github.com/shopspring/decimal"
 	"gopkg.in/mgo.v2/bson"
 	"log"
 	"strings"
@@ -12,14 +13,55 @@ type Expense struct {
 	ID          bson.ObjectId `bson:"_id,omitempty"`
 	Date        time.Time
 	Description string
-	Amount      float32
+	Amount      decimal.Decimal
 	Checked     bool
 }
 
-func parseAmount(amount string) float32 {
+func (self Expense) GetBSON() (interface{}, error) {
+	amountFloat, _ := self.Amount.Float64()
+
+	return struct {
+		Date        time.Time `json:"date" bson:"date"`
+		Description string    `json:"description" bson:"description"`
+		Amount      float64   `json:"amount" bson:"amount"`
+		Checked     bool      `json:"checked" bson:"checked"`
+	}{
+		Date:        self.Date,
+		Description: self.Description,
+		Amount:      amountFloat,
+		Checked:     self.Checked,
+	}, nil
+}
+
+func (self *Expense) SetBSON(raw bson.Raw) error {
+
+	decoded := new(struct {
+		ID          bson.ObjectId `json:"_id,omitempty" bson:"_id,omitempty"`
+		Date        time.Time     `json:"date" bson:"date"`
+		Description string        `json:"description" bson:"description"`
+		Amount      float64       `json:"amount" bson:"amount"`
+		Checked     bool          `json:"checked" bson:"checked"`
+	})
+
+	bsonErr := raw.Unmarshal(decoded)
+
+	if bsonErr == nil {
+		self.ID = decoded.ID
+		self.Date = decoded.Date
+		self.Description = decoded.Description
+		self.Amount = decimal.NewFromFloat(decoded.Amount)
+		self.Checked = decoded.Checked
+		return nil
+	} else {
+		return bsonErr
+	}
+}
+
+// FIXME should be handled in the controller
+func parseAmount(amount string) decimal.Decimal {
 	parsedAmount, err := amountUtils.ParseString(amount)
 	if !strings.Contains(amount, "+") {
-		parsedAmount = parsedAmount * -1
+		parsedAmount = parsedAmount.Mul(decimal.NewFromFloat(-1))
 	}
 	if err != nil {
 		log.Fatal(err)

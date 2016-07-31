@@ -2,6 +2,7 @@ package budget
 
 import (
 	"github.com/magleff/gobro/features/expense"
+	"github.com/shopspring/decimal"
 	"gopkg.in/mgo.v2/bson"
 	"time"
 )
@@ -11,11 +12,11 @@ type Budget struct {
 	StartDate      time.Time
 	EndDate        time.Time
 	Expenses       []expense.Expense
-	InitialBalance float32
+	InitialBalance decimal.Decimal
 	Active         bool
 }
 
-func NewBudget(balance float32, initialExpenses []expense.Expense) *Budget {
+func NewBudget(balance decimal.Decimal, initialExpenses []expense.Expense) *Budget {
 	instance := new(Budget)
 	instance.StartDate = time.Now()
 	instance.Active = true

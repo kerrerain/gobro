@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/mail"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -20,16 +19,6 @@ type MailController struct{}
 func NewMailController() *MailController {
 	instance := new(MailController)
 	return instance
-}
-
-//FIXME duplicate code
-func parseAmount(amount string) float32 {
-	amount = strings.Replace(amount, ",", ".", 1)
-	amountFloat, err := strconv.ParseFloat(amount, 32)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return float32(amountFloat)
 }
 
 func populateExpensesFromGobroMail(expenses *[]expense.Expense, subject string, body string) {
