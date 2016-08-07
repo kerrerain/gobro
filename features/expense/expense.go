@@ -10,17 +10,19 @@ import (
 )
 
 type Expense struct {
-	ID          bson.ObjectId `bson:"_id,omitempty"`
-	Date        time.Time
-	Description string
-	Amount      decimal.Decimal
-	Checked     bool
+	ID          bson.ObjectId   `json:"_id,omitempty" bson:"_id,omitempty"`
+	Date        time.Time       `json:"date" bson:"date"`
+	Description string          `json:"description" bson:"description"`
+	Amount      decimal.Decimal `json:"amount" bson:"amount"`
+	Checked     bool            `json:"checked" bson:"checked"`
 }
 
-func (self Expense) GetBSON() (interface{}, error) {
+func (self *Expense) GetBSON() (interface{}, error) {
 	amountFloat, _ := self.Amount.Float64()
 
-	return struct {
+	// A custom definition of the struct is needed:
+	// BSON can't marshal the Decimal type, Amount is switched to a float64.
+	return &struct {
 		Date        time.Time `json:"date" bson:"date"`
 		Description string    `json:"description" bson:"description"`
 		Amount      float64   `json:"amount" bson:"amount"`
@@ -34,27 +36,25 @@ func (self Expense) GetBSON() (interface{}, error) {
 }
 
 func (self *Expense) SetBSON(raw bson.Raw) error {
-
 	decoded := new(struct {
-		ID          bson.ObjectId `json:"_id,omitempty" bson:"_id,omitempty"`
+		ID          bson.ObjectId `json:"_id" bson:"_id"`
 		Date        time.Time     `json:"date" bson:"date"`
 		Description string        `json:"description" bson:"description"`
 		Amount      float64       `json:"amount" bson:"amount"`
 		Checked     bool          `json:"checked" bson:"checked"`
 	})
 
-	bsonErr := raw.Unmarshal(decoded)
-
-	if bsonErr == nil {
-		self.ID = decoded.ID
-		self.Date = decoded.Date
-		self.Description = decoded.Description
-		self.Amount = decimal.NewFromFloat(decoded.Amount)
-		self.Checked = decoded.Checked
+	if err := raw.Unmarshal(decoded); err != nil {
 		return nil
-	} else {
-		return bsonErr
 	}
+
+	self.Amount = decimal.NewFromFloat(decoded.Amount)
+	self.ID = decoded.ID
+	self.Date = decoded.Date
+	self.Description = decoded.Description
+	self.Checked = decoded.Checked
+
+	return nil
 }
 
 // FIXME should be handled in the controller
