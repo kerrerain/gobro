@@ -1,12 +1,13 @@
-package database
+package database_test
 
 import (
+	"github.com/magleff/gobro/database"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 type FakeDatastore struct {
-	Datastore
+	database.Datastore
 }
 
 func TestDatastore(t *testing.T) {

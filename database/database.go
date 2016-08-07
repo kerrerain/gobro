@@ -25,8 +25,14 @@ func GetSession() Session {
 	return session
 }
 
+// Inits the database with a default implementation.
+// The default is MGO
 func InitDatabase() {
-	database = MgoDatabase{}
+	InitDatabaseWithImpl(MgoDatabase{})
+}
+
+func InitDatabaseWithImpl(impl Database) {
+	database = impl
 }
 
 /*

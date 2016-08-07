@@ -1,7 +1,8 @@
-package collections
+package collections_test
 
 import (
 	"github.com/magleff/gobro/features/expense"
+	"github.com/magleff/gobro/utils/collections"
 	"testing"
 )
 
@@ -10,7 +11,7 @@ func TestFilter(t *testing.T) {
 	checkedExpense.Checked = true
 	expenses := []expense.Expense{*checkedExpense,
 		*expense.NewExpense("50", "test")}
-	filteredExpenses := Filter(expenses, func(expense expense.Expense) bool {
+	filteredExpenses := collections.Filter(expenses, func(expense expense.Expense) bool {
 		return expense.Checked
 	})
 	if len(filteredExpenses) != 1 {
