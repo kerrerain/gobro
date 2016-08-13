@@ -2,6 +2,7 @@ package cmd_test
 
 import (
 	cmdPackage "github.com/magleff/gobro/cmd"
+	"github.com/magleff/gobro/mocks"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -11,7 +12,7 @@ func TestRunInitCommand(t *testing.T) {
 	// Arrange
 	args := []string{"20.25"}
 
-	budgetController := new(MockBudgetController)
+	budgetController := new(mocks.MockBudgetController)
 	budgetController.On("CreatePristineBudget", args[0]).Return(nil)
 
 	command := cmdPackage.GobroInitCommand{}
@@ -42,7 +43,7 @@ func TestRunInitCommandFlagFixed(t *testing.T) {
 	// Arrange
 	args := []string{"20.25"}
 
-	budgetController := new(MockBudgetController)
+	budgetController := new(mocks.MockBudgetController)
 	budgetController.On("CreateBudgetWithFixedExpenses", args[0]).Return(nil)
 
 	command := cmdPackage.GobroInitCommand{}

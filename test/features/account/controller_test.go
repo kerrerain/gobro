@@ -9,50 +9,50 @@ import (
 
 type AccountControllerTestSuite struct {
 	suite.Suite
-	accountDatastore *MockAccountDatastore
-	controller       *accountPackage.AccountControllerImpl
+	AccountDatastore *MockAccountDatastore
+	Controller       *accountPackage.AccountControllerImpl
 }
 
 func (suite *AccountControllerTestSuite) SetupTest() {
-	suite.accountDatastore = new(MockAccountDatastore)
-	suite.controller = new(accountPackage.AccountControllerImpl)
-	suite.controller.AccountDatastore = suite.accountDatastore
+	suite.AccountDatastore = new(MockAccountDatastore)
+	suite.Controller = new(accountPackage.AccountControllerImpl)
+	suite.Controller.AccountDatastore = suite.AccountDatastore
 }
 
 func (suite *AccountControllerTestSuite) TestCreate() {
 	// Arrange
 	name := "Main account"
 	account := accountPackage.Account{Name: name}
-	suite.accountDatastore.On("Create", account).Return()
+	suite.AccountDatastore.On("Create", account).Return()
 
 	// Act
-	err := suite.controller.Create(name)
+	err := suite.Controller.Create(name)
 
 	// Assert
-	suite.accountDatastore.AssertExpectations(suite.T())
+	suite.AccountDatastore.AssertExpectations(suite.T())
 	assert.NoError(suite.T(), err, "Should not throw an error.")
 }
 
 func (suite *AccountControllerTestSuite) TestList() {
 	// Arrange
-	suite.accountDatastore.On("List").Return([]accountPackage.Account{})
+	suite.AccountDatastore.On("List").Return([]accountPackage.Account{})
 
 	// Act
-	suite.controller.List()
+	suite.Controller.List()
 
 	// Assert
-	suite.accountDatastore.AssertExpectations(suite.T())
+	suite.AccountDatastore.AssertExpectations(suite.T())
 }
 
 func (suite *AccountControllerTestSuite) TestCurrent() {
 	// Arrange
-	suite.accountDatastore.On("Current").Return(&accountPackage.Account{})
+	suite.AccountDatastore.On("Current").Return(&accountPackage.Account{})
 
 	// Act
-	suite.controller.Current()
+	suite.Controller.Current()
 
 	// Assert
-	suite.accountDatastore.AssertExpectations(suite.T())
+	suite.AccountDatastore.AssertExpectations(suite.T())
 }
 
 func TestAccountControllerTestSuite(t *testing.T) {

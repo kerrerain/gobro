@@ -2,6 +2,7 @@ package cmd_test
 
 import (
 	cmdPackage "github.com/magleff/gobro/cmd"
+	"github.com/magleff/gobro/mocks"
 	"github.com/spf13/cobra"
 	"testing"
 )
@@ -10,7 +11,7 @@ func TestRunCloseCommand(t *testing.T) {
 	// Arrange
 	args := []string{}
 
-	budgetController := new(MockBudgetController)
+	budgetController := new(mocks.MockBudgetController)
 	budgetController.On("CloseCurrentBudget").Return(nil)
 
 	command := cmdPackage.GobroCloseCommand{}

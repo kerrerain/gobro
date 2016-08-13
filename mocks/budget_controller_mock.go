@@ -1,4 +1,4 @@
-package cmd_test
+package mocks
 
 import (
 	"github.com/magleff/gobro/features/budget"
