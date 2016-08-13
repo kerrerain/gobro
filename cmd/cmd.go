@@ -1,3 +1,4 @@
+// This package contains the cobra commands of the Gobro CLI application.
 package cmd
 
 import (

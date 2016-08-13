@@ -1,4 +1,3 @@
-// This package contains the cobra commands of the CLI application.
 package cmd
 
 import (

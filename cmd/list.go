@@ -2,22 +2,55 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/magleff/gobro/features/account"
 	"github.com/magleff/gobro/features/budget"
-	"github.com/magleff/gobro/features/expense"
-	"github.com/magleff/gobro/features/expensefixed"
 	"github.com/spf13/cobra"
 )
 
-func displayExpensesFixed(expensesFixed []expense.Expense) {
-	for index, entry := range expensesFixed {
-		fmt.Println(index, ")", entry.Amount, entry.Description, entry.Date)
+type GobroListCommand struct {
+	Command           *cobra.Command
+	AccountController account.AccountController
+	BudgetController  budget.BudgetController
+}
+
+func (self *GobroListCommand) Init() {
+	self.Command = &cobra.Command{
+		Use:   "list [account] or list [budget] or list",
+		Short: "Lists the elements",
+		Long: `Lists the accounts, the budgets created for the current account,
+			or the expenses for the current budget if you simply run "list".`,
+		RunE: self.Run,
 	}
+	self.AccountController = account.NewAccountController()
+	self.BudgetController = budget.NewBudgetController()
+}
+
+func (self *GobroListCommand) Run(cmd *cobra.Command, args []string) error {
+	var err error
+
+	if len(args) == 0 {
+		currentBudget := self.BudgetController.CurrentBudget()
+		displayBudgetExpenses(*currentBudget)
+	} else if typeOfElement := args[0]; typeOfElement == "account" {
+		accounts := self.AccountController.List()
+		displayAccounts(accounts)
+	}
+
+	return err
 }
 
 func printChecked(checked bool) string {
+	return printBoolean(checked, "X")
+}
+
+func printActive(active bool) string {
+	return printBoolean(active, "*")
+}
+
+func printBoolean(boolean bool, char string) string {
 	str := ""
-	if checked {
-		str = "X"
+	if boolean {
+		str = char
 	}
 	return str
 }
@@ -37,24 +70,14 @@ func displayBudgetExpenses(budget budget.Budget) {
 	fmt.Printf("\n")
 }
 
-var listCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List something",
-	Long:  `List something`,
-	Run: func(cmd *cobra.Command, args []string) {
-		if typeOfExpense == "fixed" {
-			controller := expensefixed.NewExpenseFixedController()
-			expensesFixed := controller.ListExpensesFixed()
-			displayExpensesFixed(expensesFixed)
-		} else {
-			budgetController := budget.NewBudgetController()
-			currentBudget := budgetController.CurrentBudget()
-			displayBudgetExpenses(*currentBudget)
-		}
-	},
+func displayAccounts(accounts []account.Account) {
+	for _, entry := range accounts {
+		fmt.Printf("%-2s %-30s\n", printActive(entry.Active), entry.Name)
+	}
 }
 
 func init() {
-	listCmd.Flags().StringVarP(&typeOfExpense, "type", "t", "", "Type of the expense")
-	RootCmd.AddCommand(listCmd)
+	command := GobroListCommand{}
+	command.Init()
+	RootCmd.AddCommand(command.Command)
 }

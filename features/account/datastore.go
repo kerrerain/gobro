@@ -2,6 +2,7 @@ package account
 
 import (
 	"github.com/magleff/gobro/database"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type AccountDatastore interface {
@@ -25,5 +26,11 @@ func (self AccountDatastoreImpl) Current() *Account {
 }
 
 func (self AccountDatastoreImpl) List() []Account {
-	return nil
+	var accounts []Account
+
+	self.ExecuteInSession(func() {
+		self.Collection("account").Find(bson.M{}).All(&accounts)
+	})
+
+	return accounts
 }
