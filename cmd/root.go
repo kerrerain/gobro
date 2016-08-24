@@ -5,11 +5,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var filePath string
-var typeOfExpense string
-var pristine bool
-var mailFlag bool
-
 var RootCmd = &cobra.Command{
 	Use:   "gobro",
 	Short: "Simple budget management",
