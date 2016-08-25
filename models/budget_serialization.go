@@ -13,14 +13,14 @@ func (self *Budget) GetBSON() (interface{}, error) {
 		InitialBalance float64   `json:"initialbalance" bson:"initialbalance"`
 		StartDate      time.Time `json:"startdate" bson:"startdate"`
 		EndDate        time.Time `json:"enddate" bson:"enddate"`
-		//Expenses       []expense.Expense `json:"expenses" bson:"expenses"`
-		Active bool `json:"active" bson:"active"`
+		Expenses       []Expense `json:"expenses" bson:"expenses"`
+		Active         bool      `json:"active" bson:"active"`
 	}{
 		InitialBalance: initialBalanceFloat,
 		StartDate:      self.StartDate,
 		EndDate:        self.EndDate,
-		//Expenses:       self.Expenses,
-		Active: self.Active,
+		Expenses:       self.Expenses,
+		Active:         self.Active,
 	}, nil
 }
 
@@ -32,8 +32,8 @@ func (self *Budget) SetBSON(raw bson.Raw) error {
 		InitialBalance float64       `json:"initialbalance" bson:"initialbalance"`
 		StartDate      time.Time     `json:"startdate" bson:"startdate"`
 		EndDate        time.Time     `json:"enddate" bson:"enddate"`
-		//Expenses       []expense.Expense `json:"expenses" bson:"expenses"`
-		Active bool `json:"active" bson:"active"`
+		Expenses       []Expense     `json:"expenses" bson:"expenses"`
+		Active         bool          `json:"active" bson:"active"`
 	})
 
 	if err := raw.Unmarshal(&decoded); err != nil {
@@ -44,7 +44,7 @@ func (self *Budget) SetBSON(raw bson.Raw) error {
 	self.InitialBalance = decimal.NewFromFloat(decoded.InitialBalance)
 	self.StartDate = decoded.StartDate
 	self.EndDate = decoded.EndDate
-	//self.Expenses = decoded.Expenses
+	self.Expenses = decoded.Expenses
 	self.Active = decoded.Active
 
 	return nil

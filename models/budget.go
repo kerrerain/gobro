@@ -8,22 +8,22 @@ import (
 )
 
 type BudgetEntity interface {
-	GetCurrent() Budget
+	GetCurrent() *Budget
 }
 
 type Budget struct {
-	ID        bson.ObjectId `bson:"_id,omitempty"`
-	StartDate time.Time
-	EndDate   time.Time
-	//Expenses       []expense.Expense
+	ID             bson.ObjectId `bson:"_id,omitempty"`
+	StartDate      time.Time
+	EndDate        time.Time
+	Expenses       []Expense
 	InitialBalance decimal.Decimal
 	Active         bool
 }
 
-func (e Budget) GetCurrent() Budget {
+func (e Budget) GetCurrent() *Budget {
 	var budget Budget
 	database.ExecuteInSession(func(session database.Session) {
 		session.DefaultSchema().Collection("budget").Find(bson.M{"active": true}).One(&budget)
 	})
-	return budget
+	return &budget
 }
