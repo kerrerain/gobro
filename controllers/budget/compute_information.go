@@ -1,4 +1,4 @@
-package controllers
+package budget
 
 import (
 	"github.com/magleff/gobro/dto"
@@ -6,13 +6,7 @@ import (
 	"github.com/magleff/gobro/utils"
 )
 
-type BudgetController interface {
-	ComputeInformation(models.BudgetEntity) *dto.BudgetInformation
-}
-
-type Budget struct{}
-
-func (c Budget) ComputeInformation(entity models.BudgetEntity) *dto.BudgetInformation {
+func (c Impl) ComputeInformation(entity models.BudgetEntity) *dto.BudgetInformation {
 	information := new(dto.BudgetInformation)
 	budget := entity.GetCurrent()
 

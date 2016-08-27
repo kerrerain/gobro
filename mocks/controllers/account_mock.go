@@ -18,7 +18,7 @@ func (m Account) List(entity models.AccountEntity) []models.Account {
 	}
 }
 
-func (m Account) Open(entity models.AccountEntity, name string) error {
+func (m Account) Create(entity models.AccountEntity, name string) error {
 	args := m.Called(entity)
 	if err := args.Error(0); err == nil {
 		return nil

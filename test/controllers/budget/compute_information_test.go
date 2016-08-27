@@ -1,7 +1,7 @@
-package controllers_test
+package controllers_budget_test
 
 import (
-	"github.com/magleff/gobro/controllers"
+	target "github.com/magleff/gobro/controllers/budget"
 	mocksModels "github.com/magleff/gobro/mocks/models"
 	"github.com/magleff/gobro/models"
 	"github.com/shopspring/decimal"
@@ -11,7 +11,7 @@ import (
 
 func TestComputeInformation(t *testing.T) {
 	// Arrange
-	controller := controllers.Budget{}
+	controller := target.Impl{}
 
 	currentBudget := &models.Budget{}
 	currentBudget.InitialBalance = decimal.NewFromFloat(1114.25)
