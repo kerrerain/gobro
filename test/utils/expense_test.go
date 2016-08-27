@@ -2,6 +2,7 @@ package models_test
 
 import (
 	"github.com/magleff/gobro/models"
+	"github.com/magleff/gobro/utils"
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -16,7 +17,7 @@ func TestComputeTotalEarnings(t *testing.T) {
 	}
 
 	// Act
-	totalEarnings := models.ComputeTotalEarnings(expenses)
+	totalEarnings := utils.ComputeTotalEarnings(expenses)
 
 	// Assert
 	assert.Equal(t, decimal.NewFromFloat(30.56), totalEarnings, "Should compute the total earnings (>0).")
@@ -31,7 +32,7 @@ func TestComputeTotalExpenses(t *testing.T) {
 	}
 
 	// Act
-	totalExpenses := models.ComputeTotalExpenses(expenses)
+	totalExpenses := utils.ComputeTotalExpenses(expenses)
 
 	// Assert
 	assert.Equal(t, decimal.NewFromFloat(-30.56), totalExpenses, "Should compute the total expenses (<=0).")
@@ -46,7 +47,7 @@ func TestComputeTotalUncheckedExpenses(t *testing.T) {
 	}
 
 	// Act
-	totalUnchekedExpenses := models.ComputeTotalUncheckedExpenses(expenses)
+	totalUnchekedExpenses := utils.ComputeTotalUncheckedExpenses(expenses)
 
 	// Assert
 	assert.Equal(t, decimal.NewFromFloat(-40.73),

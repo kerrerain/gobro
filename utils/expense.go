@@ -1,10 +1,11 @@
-package models
+package utils
 
 import (
+	"github.com/magleff/gobro/models"
 	"github.com/shopspring/decimal"
 )
 
-func ComputeTotalEarnings(expenses []Expense) decimal.Decimal {
+func ComputeTotalEarnings(expenses []models.Expense) decimal.Decimal {
 	totalEarnings := decimal.NewFromFloat(0.00)
 	for _, entry := range expenses {
 		if entry.Amount.Cmp(decimal.NewFromFloat(0)) > 0 {
@@ -14,7 +15,7 @@ func ComputeTotalEarnings(expenses []Expense) decimal.Decimal {
 	return totalEarnings
 }
 
-func ComputeTotalExpenses(expenses []Expense) decimal.Decimal {
+func ComputeTotalExpenses(expenses []models.Expense) decimal.Decimal {
 	totalExpenses := decimal.NewFromFloat(0.00)
 	for _, entry := range expenses {
 		if entry.Amount.Cmp(decimal.NewFromFloat(0)) <= 0 {
@@ -24,9 +25,9 @@ func ComputeTotalExpenses(expenses []Expense) decimal.Decimal {
 	return totalExpenses
 }
 
-func ComputeTotalUncheckedExpenses(expenses []Expense) decimal.Decimal {
+func ComputeTotalUncheckedExpenses(expenses []models.Expense) decimal.Decimal {
 	totalUncheckedExpenses := decimal.NewFromFloat(0.00)
-	filteredExpenses := FilterExpenses(expenses, func(expense Expense) bool {
+	filteredExpenses := FilterExpenses(expenses, func(expense models.Expense) bool {
 		return !expense.Checked
 	})
 	for _, entry := range filteredExpenses {
@@ -38,8 +39,8 @@ func ComputeTotalUncheckedExpenses(expenses []Expense) decimal.Decimal {
 }
 
 // As seen in https://gobyexample.com/collection-functions
-func FilterExpenses(vs []Expense, f func(Expense) bool) []Expense {
-	vsf := make([]Expense, 0)
+func FilterExpenses(vs []models.Expense, f func(models.Expense) bool) []models.Expense {
+	vsf := make([]models.Expense, 0)
 	for _, v := range vs {
 		if f(v) {
 			vsf = append(vsf, v)

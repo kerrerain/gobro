@@ -7,6 +7,8 @@ import (
 
 type AccountEntity interface {
 	GetAll() []Account
+	FindByName(string) *Account
+	Create(Account)
 }
 
 type Account struct {
@@ -23,4 +25,20 @@ func (e Account) GetAll() []Account {
 	})
 
 	return accounts
+}
+
+func (e Account) FindByName(name string) *Account {
+	var account Account
+
+	database.ExecuteInSession(func(session database.Session) {
+		session.DefaultSchema().Collection("account").Find(bson.M{"name": name}).One(&account)
+	})
+
+	return &account
+}
+
+func (e Account) Create(account Account) {
+	database.ExecuteInSession(func(session database.Session) {
+		session.DefaultSchema().Collection("account").Insert(account)
+	})
 }

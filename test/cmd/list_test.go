@@ -2,18 +2,22 @@ package cmd_test
 
 import (
 	"github.com/magleff/gobro/cmd"
+	mocksControllers "github.com/magleff/gobro/mocks/controllers"
+	mocksModels "github.com/magleff/gobro/mocks/models"
 	"github.com/magleff/gobro/models"
 	"testing"
 )
 
 func TestListCmd(t *testing.T) {
 	// Arrange
-	accountEntity := new(models.AccountEntityMock)
-	accountEntity.On("GetAll").Return([]models.Account{})
+	entity := mocksModels.Account{}
+
+	controller := mocksControllers.Account{}
+	controller.On("List", entity).Return([]models.Account{})
 
 	// Act
-	cmd.ListCmd([]string{}, accountEntity)
+	cmd.ListCmd([]string{}, controller, entity)
 
 	// Assert
-	accountEntity.AssertExpectations(t)
+	controller.AssertExpectations(t)
 }
