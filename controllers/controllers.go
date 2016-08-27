@@ -5,6 +5,9 @@
 // the "account" controller interface is called using "account.Controller".
 //
 // There must be only one endpoint by file, in order to avoid one big file that grows
-// over time with dozens and dozens of endpoints and their logic.
+// over time with dozens of endpoints.
 //
+// The implementation of an endpoit should be divided into two parts:
+// - NameOfTheEndpoint --> A facade whose sole purpose is to inject the entities into the implementation.
+// - NameOfTheEndpointDo --> The actual implementation, with the entities it needs injected by the facade.
 package controllers

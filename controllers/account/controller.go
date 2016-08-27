@@ -5,8 +5,8 @@ import (
 )
 
 type Controller interface {
-	List(models.AccountEntity) []models.Account
-	Create(models.AccountEntity, string) error
+	List() []models.Account
+	Create(string) error
 }
 
 type Impl struct{}

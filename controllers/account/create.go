@@ -5,7 +5,12 @@ import (
 	"github.com/magleff/gobro/models"
 )
 
-func (c Impl) Create(entity models.AccountEntity, name string) error {
+func (c Impl) Create(name string) error {
+	// Manually inject entities
+	return CreateDo(models.Account{}, name)
+}
+
+func CreateDo(entity models.AccountEntity, name string) error {
 	if len(name) == 0 {
 		return errors.New("A name should be provided for the new account.")
 	}

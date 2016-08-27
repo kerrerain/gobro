@@ -11,14 +11,13 @@ import (
 func TestCreate(t *testing.T) {
 	// Arrange
 	name := "main"
-	controller := target.Impl{}
 
 	entity := mocksModels.Account{}
 	entity.On("FindByName", name).Return(nil)
 	entity.On("Create", models.Account{Name: name}).Return()
 
 	// Act
-	err := controller.Create(entity, name)
+	err := target.CreateDo(entity, name)
 
 	// Assert
 	entity.AssertExpectations(t)
@@ -28,13 +27,12 @@ func TestCreate(t *testing.T) {
 func TestCreateAlreadyExists(t *testing.T) {
 	// Arrange
 	name := "main"
-	controller := target.Impl{}
 
 	entity := mocksModels.Account{}
 	entity.On("FindByName", name).Return(&models.Account{})
 
 	// Act
-	err := controller.Create(entity, name)
+	err := target.CreateDo(entity, name)
 
 	// Assert
 	entity.AssertExpectations(t)
@@ -44,11 +42,10 @@ func TestCreateAlreadyExists(t *testing.T) {
 func TestCreateEmptyName(t *testing.T) {
 	// Arrange
 	name := ""
-	controller := target.Impl{}
 	entity := mocksModels.Account{}
 
 	// Act
-	err := controller.Create(entity, name)
+	err := target.CreateDo(entity, name)
 
 	// Assert
 	entity.AssertExpectations(t)

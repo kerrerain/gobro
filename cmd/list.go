@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"github.com/magleff/gobro/controllers/account"
-	"github.com/magleff/gobro/models"
 	"github.com/spf13/cobra"
 )
 
@@ -11,15 +10,16 @@ var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List something",
 	Long:  `List something`,
-	Run:   RunListCmd,
+	Run:   ListCmd,
 }
 
-func RunListCmd(cmd *cobra.Command, args []string) {
-	ListCmd(args, account.Impl{}, models.Account{})
+func ListCmd(cmd *cobra.Command, args []string) {
+	// Manually inject entities
+	ListCmdDo(args, account.Impl{})
 }
 
-func ListCmd(args []string, accountController account.Controller, accountEntity models.AccountEntity) {
-	accounts := accountController.List(accountEntity)
+func ListCmdDo(args []string, accountController account.Controller) {
+	accounts := accountController.List()
 	for _, entry := range accounts {
 		fmt.Println(entry.Name)
 	}

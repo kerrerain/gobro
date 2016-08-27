@@ -9,8 +9,8 @@ type Account struct {
 	mock.Mock
 }
 
-func (m Account) List(entity models.AccountEntity) []models.Account {
-	args := m.Called(entity)
+func (m Account) List() []models.Account {
+	args := m.Called()
 	if accounts := args.Get(0); accounts == nil {
 		return nil
 	} else {
@@ -18,8 +18,8 @@ func (m Account) List(entity models.AccountEntity) []models.Account {
 	}
 }
 
-func (m Account) Create(entity models.AccountEntity, name string) error {
-	args := m.Called(entity)
+func (m Account) Create(name string) error {
+	args := m.Called()
 	if err := args.Error(0); err == nil {
 		return nil
 	} else {

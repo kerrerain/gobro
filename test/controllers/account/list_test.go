@@ -9,13 +9,11 @@ import (
 
 func TestList(t *testing.T) {
 	// Arrange
-	controller := target.Impl{}
-
 	entity := mocksModels.Account{}
 	entity.On("GetAll").Return([]models.Account{})
 
 	// Act
-	controller.List(entity)
+	target.ListDo(entity)
 
 	// Assert
 	entity.AssertExpectations(t)
