@@ -1,6 +1,7 @@
 package controllers_account_test
 
 import (
+	"errors"
 	target "github.com/magleff/gobro/controllers/account"
 	mocksModels "github.com/magleff/gobro/mocks/models"
 	"github.com/magleff/gobro/models"
@@ -11,13 +12,14 @@ import (
 func TestCreate(t *testing.T) {
 	// Arrange
 	name := "main"
+	user := &models.User{}
 
 	entity := mocksModels.Account{}
-	entity.On("FindByName", name).Return(nil)
-	entity.On("Create", models.Account{Name: name}).Return()
+	entity.On("FindByName", name).Return(nil, errors.New("Doesn't exist."))
+	entity.On("Create", *user, models.Account{Name: name}).Return()
 
 	// Act
-	err := target.CreateDo(entity, name)
+	err := target.CreateDo(entity, user, name)
 
 	// Assert
 	entity.AssertExpectations(t)
@@ -27,12 +29,13 @@ func TestCreate(t *testing.T) {
 func TestCreateAlreadyExists(t *testing.T) {
 	// Arrange
 	name := "main"
+	user := &models.User{}
 
 	entity := mocksModels.Account{}
-	entity.On("FindByName", name).Return(&models.Account{})
+	entity.On("FindByName", name).Return(&models.Account{}, nil)
 
 	// Act
-	err := target.CreateDo(entity, name)
+	err := target.CreateDo(entity, user, name)
 
 	// Assert
 	entity.AssertExpectations(t)
@@ -42,10 +45,11 @@ func TestCreateAlreadyExists(t *testing.T) {
 func TestCreateEmptyName(t *testing.T) {
 	// Arrange
 	name := ""
+	user := &models.User{}
 	entity := mocksModels.Account{}
 
 	// Act
-	err := target.CreateDo(entity, name)
+	err := target.CreateDo(entity, user, name)
 
 	// Assert
 	entity.AssertExpectations(t)

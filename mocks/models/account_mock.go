@@ -18,15 +18,15 @@ func (m Account) GetAll() []models.Account {
 	}
 }
 
-func (m Account) FindByName(name string) *models.Account {
+func (m Account) FindByName(name string) (*models.Account, error) {
 	args := m.Called(name)
 	if account := args.Get(0); account == nil {
-		return nil
+		return nil, args.Error(1)
 	} else {
-		return account.(*models.Account)
+		return account.(*models.Account), args.Error(1)
 	}
 }
 
-func (m Account) Create(account models.Account) {
-	m.Called(account)
+func (m Account) Create(user models.User, account models.Account) {
+	m.Called(user, account)
 }

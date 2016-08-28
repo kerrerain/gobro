@@ -28,8 +28,7 @@ func ExecuteInSession(fn func(session Session)) {
 	fn(session)
 }
 
-// Inits the database with a default implementation.
-// The default is MGO
+// Inits the database with a default implementation. The default is MGO.
 func InitDatabase() {
 	InitDatabaseWithImpl(MgoDatabase{})
 }

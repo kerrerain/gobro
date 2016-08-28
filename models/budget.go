@@ -12,12 +12,14 @@ type BudgetEntity interface {
 }
 
 type Budget struct {
-	ID             bson.ObjectId `bson:"_id,omitempty"`
-	StartDate      time.Time
-	EndDate        time.Time
-	Expenses       []Expense
-	InitialBalance decimal.Decimal
-	Active         bool
+	ID               bson.ObjectId `bson:"_id,omitempty"`
+	AccountId        bson.ObjectId
+	UserId           bson.ObjectId
+	StartDate        time.Time
+	LastModification time.Time
+	Expenses         []Expense
+	InitialBalance   decimal.Decimal
+	Active           bool
 }
 
 func (e Budget) GetCurrent() *Budget {

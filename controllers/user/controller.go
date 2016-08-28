@@ -1,7 +1,9 @@
 package user
 
 type Controller interface {
-	Open(userName string, accountName string) error
+	OpenAccount(userName string, accountName string) error
+	Create(userName string) error
+	InitDefault()
 }
 
 type Impl struct{}
