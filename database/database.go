@@ -14,7 +14,7 @@ type Database interface {
 
 // Gets the singleton session of the database.
 // The dabatase is dialed only once: calling this method twice
-// won't create another sessions.
+// won't create another session.
 func GetSession() Session {
 	once.Do(func() {
 		session = database.DialDatabase()

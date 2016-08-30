@@ -8,13 +8,13 @@ import (
 type UserEntity interface {
 	FindByName(name string) (*User, error)
 	Update(user User)
-	Create(user User)
+	Create(user User) error
 	UpdateAccount(user User, account Account)
 }
 
 type User struct {
 	ID                bson.ObjectId `bson:"_id,omitempty"`
-	CurrentAccountId  bson.ObjectId
+	CurrentAccountId  bson.ObjectId `bson:"accountid,omitempty"`
 	CurrentBudgetsIds []bson.ObjectId
 	Name              string
 }
@@ -36,10 +36,12 @@ func (e User) Update(user User) {
 	})
 }
 
-func (e User) Create(user User) {
+func (e User) Create(user User) error {
+	var err error
 	database.ExecuteInSession(func(session database.Session) {
-		session.DefaultSchema().Collection("user").Insert(user)
+		err = session.DefaultSchema().Collection("user").Insert(user)
 	})
+	return err
 }
 
 func (e User) UpdateAccount(user User, account Account) {

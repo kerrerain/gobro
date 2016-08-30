@@ -15,7 +15,7 @@ func TestInitDefault(t *testing.T) {
 
 	userEntity := mocksModels.User{}
 	userEntity.On("FindByName", userName).Return(nil, errors.New("Doesn't exist."))
-	userEntity.On("Create", models.User{Name: userName}).Return()
+	userEntity.On("Create", models.User{Name: userName}).Return(nil)
 
 	// Act
 	target.InitDefaultDo(userEntity)

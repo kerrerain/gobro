@@ -14,6 +14,9 @@ func main() {
 	// Inits a default user (only if it hasn't been created yet)
 	user.Impl{}.InitDefault()
 
+	// Close the database's main session after running the command
+	defer database.GetSession().Close()
+
 	if err := cmd.RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(-1)

@@ -22,8 +22,9 @@ func (m User) Update(user models.User) {
 	m.Called(user)
 }
 
-func (m User) Create(user models.User) {
-	m.Called(user)
+func (m User) Create(user models.User) error {
+	args := m.Called(user)
+	return args.Error(0)
 }
 
 func (m User) UpdateAccount(user models.User, account models.Account) {
