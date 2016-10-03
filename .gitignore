@@ -1,2 +1,2 @@
 gobro
-mocks
+mocks/*_mock.go
