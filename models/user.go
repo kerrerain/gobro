@@ -7,16 +7,15 @@ import (
 
 type UserEntity interface {
 	FindByName(name string) (*User, error)
-	Update(user User)
+	Update(user User) error
 	Create(user User) error
-	UpdateAccount(user User, account Account)
 }
 
 type User struct {
-	ID                bson.ObjectId `bson:"_id,omitempty"`
-	CurrentAccountId  bson.ObjectId `bson:"accountid,omitempty"`
-	CurrentBudgetsIds []bson.ObjectId
-	Name              string
+	ID               bson.ObjectId `bson:"_id,omitempty"`
+	CurrentAccountId bson.ObjectId `bson:"accountid,omitempty"`
+	CurrentBudgetId  bson.ObjectId `bson:"budgetid,omitempty"`
+	Name             string
 }
 
 func (e User) FindByName(name string) (*User, error) {
@@ -30,10 +29,12 @@ func (e User) FindByName(name string) (*User, error) {
 	return &user, err
 }
 
-func (e User) Update(user User) {
+func (e User) Update(user User) error {
+	var err error
 	database.ExecuteInSession(func(session database.Session) {
-		session.DefaultSchema().Collection("user").UpdateId(user.ID, user)
+		err = session.DefaultSchema().Collection("user").UpdateId(user.ID, user)
 	})
+	return err
 }
 
 func (e User) Create(user User) error {
@@ -42,11 +43,4 @@ func (e User) Create(user User) error {
 		err = session.DefaultSchema().Collection("user").Insert(user)
 	})
 	return err
-}
-
-func (e User) UpdateAccount(user User, account Account) {
-	user.CurrentAccountId = account.ID
-	database.ExecuteInSession(func(session database.Session) {
-		session.DefaultSchema().Collection("user").UpdateId(user.ID, user)
-	})
 }

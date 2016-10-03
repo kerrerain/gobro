@@ -2,13 +2,16 @@ package budget
 
 import (
 	"github.com/magleff/gobro/dto"
-	"github.com/magleff/gobro/models"
 	"github.com/magleff/gobro/utils"
 )
 
-func (c Impl) ComputeInformation(entity models.BudgetEntity) *dto.BudgetInformation {
+func (c Impl) ComputeInformation() (*dto.BudgetInformation, error) {
+	return ComputeInformationDo(Impl{})
+}
+
+func ComputeInformationDo(controller Controller) (*dto.BudgetInformation, error) {
 	information := new(dto.BudgetInformation)
-	budget := entity.GetCurrent()
+	budget, err := controller.Current()
 
 	information.StartDate = budget.StartDate
 	information.InitialBalance = budget.InitialBalance
@@ -18,5 +21,5 @@ func (c Impl) ComputeInformation(entity models.BudgetEntity) *dto.BudgetInformat
 	information.Difference = information.TotalEarnings.Add(information.TotalExpenses)
 	information.CurrentBalance = information.InitialBalance.Add(information.Difference)
 
-	return information
+	return information, err
 }

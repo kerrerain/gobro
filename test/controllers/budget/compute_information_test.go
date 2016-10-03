@@ -2,7 +2,7 @@ package controllers_budget_test
 
 import (
 	target "github.com/magleff/gobro/controllers/budget"
-	mocksModels "github.com/magleff/gobro/mocks/models"
+	mocksControllers "github.com/magleff/gobro/mocks/controllers"
 	"github.com/magleff/gobro/models"
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
@@ -11,8 +11,6 @@ import (
 
 func TestComputeInformation(t *testing.T) {
 	// Arrange
-	controller := target.Impl{}
-
 	currentBudget := &models.Budget{}
 	currentBudget.InitialBalance = decimal.NewFromFloat(1114.25)
 	currentBudget.Expenses = []models.Expense{
@@ -22,14 +20,14 @@ func TestComputeInformation(t *testing.T) {
 		models.Expense{Amount: decimal.NewFromFloat(-18.36), Checked: false},
 	}
 
-	entity := mocksModels.Budget{}
-	entity.On("GetCurrent").Return(currentBudget)
+	mock := mocksControllers.Budget{}
+	mock.On("Current").Return(currentBudget, nil)
 
 	// Act
-	information := controller.ComputeInformation(entity)
+	information, _ := target.ComputeInformationDo(mock)
 
 	// Assert
-	entity.AssertExpectations(t)
+	mock.AssertExpectations(t)
 
 	assert.Equal(t, decimal.NewFromFloat(-49.04), information.TotalExpenses,
 		"Should compute the total of expenses.")

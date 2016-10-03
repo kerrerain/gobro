@@ -18,7 +18,7 @@ func TestOpenAccount(t *testing.T) {
 	accountEntity := mocksModels.Account{}
 
 	accountEntity.On("FindByName", accountName).Return(&models.Account{}, nil)
-	userEntity.On("UpdateAccount", *user, models.Account{}).Return()
+	userEntity.On("Update", *user).Return(nil)
 
 	// Act
 	err := target.OpenAccountDo(userEntity, accountEntity, user, accountName)

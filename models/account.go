@@ -12,11 +12,12 @@ type AccountEntity interface {
 }
 
 type Account struct {
-	ID     bson.ObjectId `bson:"_id,omitempty"`
-	UserId bson.ObjectId
-	Name   string
-	Label  string
-	Active bool
+	ID              bson.ObjectId `bson:"_id,omitempty"`
+	UserId          bson.ObjectId `bson:"userid,omitempty"`
+	CurrentBudgetId bson.ObjectId `bson:"budgetid,omitempty"`
+	Name            string
+	Label           string
+	Active          bool
 }
 
 func (e Account) GetAll() []Account {

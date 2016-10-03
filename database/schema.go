@@ -6,4 +6,5 @@ import (
 
 type Schema interface {
 	Collection(string) *mgo.Collection
+	Run(cmd interface{}, result interface{}) error
 }

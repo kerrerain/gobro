@@ -8,13 +8,13 @@ import (
 )
 
 type BudgetEntity interface {
-	GetCurrent() *Budget
+	FindById(budgetId bson.ObjectId) (*Budget, error)
 }
 
 type Budget struct {
 	ID               bson.ObjectId `bson:"_id,omitempty"`
-	AccountId        bson.ObjectId
-	UserId           bson.ObjectId
+	AccountId        bson.ObjectId `bson:"accountid,omitempty"`
+	UserId           bson.ObjectId `bson:"userid,omitempty"`
 	StartDate        time.Time
 	LastModification time.Time
 	Expenses         []Expense
@@ -22,10 +22,13 @@ type Budget struct {
 	Active           bool
 }
 
-func (e Budget) GetCurrent() *Budget {
+func (e Budget) FindById(budgetId bson.ObjectId) (*Budget, error) {
 	var budget Budget
+	var err error
+
 	database.ExecuteInSession(func(session database.Session) {
-		session.DefaultSchema().Collection("budget").Find(bson.M{"active": true}).One(&budget)
+		err = session.DefaultSchema().Collection("budget").FindId(budgetId).One(&budget)
 	})
-	return &budget
+
+	return &budget, err
 }

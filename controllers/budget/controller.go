@@ -6,7 +6,8 @@ import (
 )
 
 type Controller interface {
-	ComputeInformation(models.BudgetEntity) *dto.BudgetInformation
+	ComputeInformation() (*dto.BudgetInformation, error)
+	Current() (*models.Budget, error)
 }
 
 type Impl struct{}

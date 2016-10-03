@@ -11,3 +11,7 @@ type MgoSchema struct {
 func (self MgoSchema) Collection(name string) *mgo.Collection {
 	return self.Schema.C(name)
 }
+
+func (self MgoSchema) Run(cmd interface{}, result interface{}) error {
+	return self.Schema.Run(cmd, result)
+}

@@ -24,7 +24,10 @@ func OpenAccountDo(userEntity models.UserEntity, accountEntity models.AccountEnt
 		return errors.New("This account doesn't exist. " + err.Error())
 	}
 
-	userEntity.UpdateAccount(*user, *account)
+	user.CurrentAccountId = account.ID
+	if databaseErr := userEntity.Update(*user); databaseErr != nil {
+		return err
+	}
 
 	return nil
 }
