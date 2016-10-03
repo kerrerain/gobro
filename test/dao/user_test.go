@@ -1,4 +1,4 @@
-package models_test
+package dao_test
 
 import (
 	"github.com/magleff/gobro/dao"
