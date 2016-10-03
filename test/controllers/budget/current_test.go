@@ -1,23 +1,26 @@
 package controllers_budget_test
 
 import (
+	"github.com/golang/mock/gomock"
 	target "github.com/magleff/gobro/controllers/budget"
-	mocksModels "github.com/magleff/gobro/mocks/models"
-	"github.com/magleff/gobro/models"
+	"github.com/magleff/gobro/entities"
+	"github.com/magleff/gobro/mocks"
 	"gopkg.in/mgo.v2/bson"
 	"testing"
 )
 
 func TestCurrent(t *testing.T) {
 	// Arrange
-	currentUser := &models.User{CurrentAccountId: bson.NewObjectId()}
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
 
-	entity := mocksModels.Budget{}
-	entity.On("FindById", currentUser.CurrentAccountId).Return(&models.Budget{})
+	currentUser := &entities.User{CurrentBudgetId: bson.NewObjectId()}
+
+	budgetDao := mocks.NewMockBudgetDao(mockCtrl)
+	budgetDao.EXPECT().FindById(currentUser.CurrentBudgetId).Return(&entities.Budget{}, nil)
 
 	// Act
-	_, _ = target.CurrentDo(entity, currentUser)
+	_, _ = target.CurrentDo(budgetDao, currentUser)
 
 	// Assert
-	entity.AssertExpectations(t)
 }

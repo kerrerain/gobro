@@ -1,8 +1,9 @@
-package models
+package models_test
 
 import (
+	"github.com/magleff/gobro/dao"
 	"github.com/magleff/gobro/database"
-	"github.com/magleff/gobro/models"
+	"github.com/magleff/gobro/entities"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/mgo.v2/bson"
 	"log"
@@ -12,13 +13,13 @@ import (
 func TestCreate(t *testing.T) {
 	// Arrange
 	userName := "default"
-	entity := models.User{}
+	userDao := dao.UserDaoImpl{}
 
 	// Act
-	err := entity.Create(models.User{Name: userName})
+	err := userDao.Create(entities.User{Name: userName})
 
 	// Assert
-	var users []models.User
+	var users []entities.User
 
 	database.ExecuteInSession(func(session database.Session) {
 		session.DefaultSchema().Collection("user").Find(bson.M{}).All(&users)
@@ -31,8 +32,8 @@ func TestCreate(t *testing.T) {
 
 func TestUpdate(t *testing.T) {
 	// Arrange
-	user := models.User{Name: "Baouh", ID: bson.NewObjectId()}
-	entity := models.User{}
+	user := entities.User{Name: "Baouh", ID: bson.NewObjectId()}
+	userDao := dao.UserDaoImpl{}
 
 	database.ExecuteInSession(func(session database.Session) {
 		if err := session.DefaultSchema().Collection("user").Insert(user); err != nil {
@@ -43,10 +44,10 @@ func TestUpdate(t *testing.T) {
 	user.Name = "Changed"
 
 	// Act
-	err := entity.Update(user)
+	err := userDao.Update(user)
 
 	// Assert
-	var updatedUser models.User
+	var updatedUser entities.User
 
 	database.ExecuteInSession(func(session database.Session) {
 		session.DefaultSchema().Collection("user").Find(bson.M{"_id": user.ID}).One(&updatedUser)

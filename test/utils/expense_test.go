@@ -1,7 +1,7 @@
-package models_test
+package utils_test
 
 import (
-	"github.com/magleff/gobro/models"
+	"github.com/magleff/gobro/entities"
 	"github.com/magleff/gobro/utils"
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
@@ -10,10 +10,10 @@ import (
 
 func TestComputeTotalEarnings(t *testing.T) {
 	// Arrange
-	expenses := []models.Expense{
-		models.Expense{Amount: decimal.NewFromFloat(20.51)},
-		models.Expense{Amount: decimal.NewFromFloat(-30.68)},
-		models.Expense{Amount: decimal.NewFromFloat(10.05)},
+	expenses := []entities.Expense{
+		entities.Expense{Amount: decimal.NewFromFloat(20.51)},
+		entities.Expense{Amount: decimal.NewFromFloat(-30.68)},
+		entities.Expense{Amount: decimal.NewFromFloat(10.05)},
 	}
 
 	// Act
@@ -25,10 +25,10 @@ func TestComputeTotalEarnings(t *testing.T) {
 
 func TestComputeTotalExpenses(t *testing.T) {
 	// Arrange
-	expenses := []models.Expense{
-		models.Expense{Amount: decimal.NewFromFloat(-20.51)},
-		models.Expense{Amount: decimal.NewFromFloat(30.68)},
-		models.Expense{Amount: decimal.NewFromFloat(-10.05)},
+	expenses := []entities.Expense{
+		entities.Expense{Amount: decimal.NewFromFloat(-20.51)},
+		entities.Expense{Amount: decimal.NewFromFloat(30.68)},
+		entities.Expense{Amount: decimal.NewFromFloat(-10.05)},
 	}
 
 	// Act
@@ -40,10 +40,10 @@ func TestComputeTotalExpenses(t *testing.T) {
 
 func TestComputeTotalUncheckedExpenses(t *testing.T) {
 	// Arrange
-	expenses := []models.Expense{
-		models.Expense{Amount: decimal.NewFromFloat(-20.51), Checked: true},
-		models.Expense{Amount: decimal.NewFromFloat(-30.68), Checked: false},
-		models.Expense{Amount: decimal.NewFromFloat(-10.05), Checked: false},
+	expenses := []entities.Expense{
+		entities.Expense{Amount: decimal.NewFromFloat(-20.51), Checked: true},
+		entities.Expense{Amount: decimal.NewFromFloat(-30.68), Checked: false},
+		entities.Expense{Amount: decimal.NewFromFloat(-10.05), Checked: false},
 	}
 
 	// Act

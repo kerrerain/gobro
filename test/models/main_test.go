@@ -1,7 +1,8 @@
-package models
+package models_test
 
 import (
 	"github.com/magleff/gobro/database"
+	"log"
 	"os"
 	"testing"
 )
@@ -9,7 +10,11 @@ import (
 func TestMain(m *testing.M) {
 	impl := &database.MgoDatabaseTest{}
 
+	log.Println("Tests on DAO, creating mongodb container...")
+
 	database.InitDatabaseWithImpl(impl)
+
+	log.Println("Container successfully created. Running tests.")
 
 	// Run tests
 	result := m.Run()
@@ -17,8 +22,12 @@ func TestMain(m *testing.M) {
 	// Close the database's main session after running the command
 	database.GetSession().Close()
 
+	log.Println("Deleting mongodb container...")
+
 	// Clean up the docker container
 	impl.Container.KillRemove()
+
+	log.Println("Container successfully deleted.")
 
 	// Exit tests
 	os.Exit(result)

@@ -1,14 +1,15 @@
 package account
 
 import (
-	"github.com/magleff/gobro/models"
+	"github.com/magleff/gobro/dao"
+	"github.com/magleff/gobro/entities"
 )
 
-func (c Impl) List() []models.Account {
+func (c AccountControllerImpl) List() []entities.Account {
 	// Manually inject entities
-	return ListDo(models.Account{})
+	return ListDo(dao.AccountDaoImpl{})
 }
 
-func ListDo(entity models.AccountEntity) []models.Account {
-	return entity.GetAll()
+func ListDo(accountDao dao.AccountDao) []entities.Account {
+	return accountDao.GetAll()
 }

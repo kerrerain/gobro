@@ -1,15 +1,23 @@
 package budget
 
 import (
-	"github.com/magleff/gobro/models"
+	"errors"
+	"github.com/magleff/gobro/dao"
+	"github.com/magleff/gobro/entities"
 	"github.com/magleff/gobro/session"
 )
 
-func (c Impl) Current() (*models.Budget, error) {
+func (c BudgetControllerImpl) Current() (*entities.Budget, error) {
 	// Manually inject entities
-	return CurrentDo(models.Budget{}, session.GetCurrentUser())
+	return CurrentDo(dao.BudgetDaoImpl{}, session.GetCurrentUser())
 }
 
-func CurrentDo(budgetEntity models.BudgetEntity, user *models.User) (*models.Budget, error) {
-	return nil, nil
+func CurrentDo(budgetDao dao.BudgetDao, user *entities.User) (*entities.Budget, error) {
+	currentBudget, err := budgetDao.FindById(user.CurrentBudgetId)
+
+	if err != nil {
+		return nil, errors.New("Test")
+	}
+
+	return currentBudget, nil
 }

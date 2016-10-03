@@ -1,9 +1,10 @@
 package controllers_budget_test
 
 import (
+	"github.com/golang/mock/gomock"
 	target "github.com/magleff/gobro/controllers/budget"
-	mocksControllers "github.com/magleff/gobro/mocks/controllers"
-	"github.com/magleff/gobro/models"
+	"github.com/magleff/gobro/entities"
+	"github.com/magleff/gobro/mocks"
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -11,24 +12,25 @@ import (
 
 func TestComputeInformation(t *testing.T) {
 	// Arrange
-	currentBudget := &models.Budget{}
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	currentBudget := &entities.Budget{}
 	currentBudget.InitialBalance = decimal.NewFromFloat(1114.25)
-	currentBudget.Expenses = []models.Expense{
-		models.Expense{Amount: decimal.NewFromFloat(20.51), Checked: false},
-		models.Expense{Amount: decimal.NewFromFloat(-30.68), Checked: true},
-		models.Expense{Amount: decimal.NewFromFloat(10.05), Checked: false},
-		models.Expense{Amount: decimal.NewFromFloat(-18.36), Checked: false},
+	currentBudget.Expenses = []entities.Expense{
+		entities.Expense{Amount: decimal.NewFromFloat(20.51), Checked: false},
+		entities.Expense{Amount: decimal.NewFromFloat(-30.68), Checked: true},
+		entities.Expense{Amount: decimal.NewFromFloat(10.05), Checked: false},
+		entities.Expense{Amount: decimal.NewFromFloat(-18.36), Checked: false},
 	}
 
-	mock := mocksControllers.Budget{}
-	mock.On("Current").Return(currentBudget, nil)
+	budgetController := mocks.NewMockBudgetController(mockCtrl)
+	budgetController.EXPECT().Current().Return(currentBudget, nil)
 
 	// Act
-	information, _ := target.ComputeInformationDo(mock)
+	information, _ := target.ComputeInformationDo(budgetController)
 
 	// Assert
-	mock.AssertExpectations(t)
-
 	assert.Equal(t, decimal.NewFromFloat(-49.04), information.TotalExpenses,
 		"Should compute the total of expenses.")
 	assert.Equal(t, decimal.NewFromFloat(30.56), information.TotalEarnings,

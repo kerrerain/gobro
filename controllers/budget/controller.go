@@ -2,12 +2,12 @@ package budget
 
 import (
 	"github.com/magleff/gobro/dto"
-	"github.com/magleff/gobro/models"
+	"github.com/magleff/gobro/entities"
 )
 
-type Controller interface {
+type BudgetController interface {
 	ComputeInformation() (*dto.BudgetInformation, error)
-	Current() (*models.Budget, error)
+	Current() (*entities.Budget, error)
 }
 
-type Impl struct{}
+type BudgetControllerImpl struct{}

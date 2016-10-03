@@ -1,12 +1,12 @@
 package account
 
 import (
-	"github.com/magleff/gobro/models"
+	"github.com/magleff/gobro/entities"
 )
 
-type Controller interface {
-	List() []models.Account
+type AccountController interface {
+	List() []entities.Account
 	Create(string) error
 }
 
-type Impl struct{}
+type AccountControllerImpl struct{}

@@ -5,11 +5,11 @@ import (
 	"github.com/magleff/gobro/utils"
 )
 
-func (c Impl) ComputeInformation() (*dto.BudgetInformation, error) {
-	return ComputeInformationDo(Impl{})
+func (c BudgetControllerImpl) ComputeInformation() (*dto.BudgetInformation, error) {
+	return ComputeInformationDo(BudgetControllerImpl{})
 }
 
-func ComputeInformationDo(controller Controller) (*dto.BudgetInformation, error) {
+func ComputeInformationDo(controller BudgetController) (*dto.BudgetInformation, error) {
 	information := new(dto.BudgetInformation)
 	budget, err := controller.Current()
 

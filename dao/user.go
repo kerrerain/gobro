@@ -1,25 +1,21 @@
-package models
+package dao
 
 import (
 	"github.com/magleff/gobro/database"
+	"github.com/magleff/gobro/entities"
 	"gopkg.in/mgo.v2/bson"
 )
 
-type UserEntity interface {
-	FindByName(name string) (*User, error)
-	Update(user User) error
-	Create(user User) error
+type UserDao interface {
+	FindByName(name string) (*entities.User, error)
+	Update(user entities.User) error
+	Create(user entities.User) error
 }
 
-type User struct {
-	ID               bson.ObjectId `bson:"_id,omitempty"`
-	CurrentAccountId bson.ObjectId `bson:"accountid,omitempty"`
-	CurrentBudgetId  bson.ObjectId `bson:"budgetid,omitempty"`
-	Name             string
-}
+type UserDaoImpl struct{}
 
-func (e User) FindByName(name string) (*User, error) {
-	var user User
+func (e UserDaoImpl) FindByName(name string) (*entities.User, error) {
+	var user entities.User
 	var err error
 
 	database.ExecuteInSession(func(session database.Session) {
@@ -29,7 +25,7 @@ func (e User) FindByName(name string) (*User, error) {
 	return &user, err
 }
 
-func (e User) Update(user User) error {
+func (e UserDaoImpl) Update(user entities.User) error {
 	var err error
 	database.ExecuteInSession(func(session database.Session) {
 		err = session.DefaultSchema().Collection("user").UpdateId(user.ID, user)
@@ -37,7 +33,7 @@ func (e User) Update(user User) error {
 	return err
 }
 
-func (e User) Create(user User) error {
+func (e UserDaoImpl) Create(user entities.User) error {
 	var err error
 	database.ExecuteInSession(func(session database.Session) {
 		err = session.DefaultSchema().Collection("user").Insert(user)

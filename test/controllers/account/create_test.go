@@ -2,56 +2,63 @@ package controllers_account_test
 
 import (
 	"errors"
+	"github.com/golang/mock/gomock"
 	target "github.com/magleff/gobro/controllers/account"
-	mocksModels "github.com/magleff/gobro/mocks/models"
-	"github.com/magleff/gobro/models"
+	"github.com/magleff/gobro/entities"
+	"github.com/magleff/gobro/mocks"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestCreate(t *testing.T) {
 	// Arrange
-	name := "main"
-	user := &models.User{}
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
 
-	entity := mocksModels.Account{}
-	entity.On("FindByName", name).Return(nil, errors.New("Doesn't exist."))
-	entity.On("Create", *user, models.Account{Name: name}).Return()
+	name := "main"
+	user := &entities.User{}
+
+	accountDao := mocks.NewMockAccountDao(mockCtrl)
+	accountDao.EXPECT().FindByName(name).Return(nil, errors.New("Doesn't exist."))
+	accountDao.EXPECT().Create(*user, entities.Account{Name: name})
 
 	// Act
-	err := target.CreateDo(entity, user, name)
+	err := target.CreateDo(accountDao, user, name)
 
 	// Assert
-	entity.AssertExpectations(t)
 	assert.NoError(t, err, "Should not throw an error if there is not an account with the name.")
 }
 
 func TestCreateAlreadyExists(t *testing.T) {
 	// Arrange
-	name := "main"
-	user := &models.User{}
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
 
-	entity := mocksModels.Account{}
-	entity.On("FindByName", name).Return(&models.Account{}, nil)
+	name := "main"
+	user := &entities.User{}
+
+	accountDao := mocks.NewMockAccountDao(mockCtrl)
+	accountDao.EXPECT().FindByName(name).Return(&entities.Account{}, nil)
 
 	// Act
-	err := target.CreateDo(entity, user, name)
+	err := target.CreateDo(accountDao, user, name)
 
 	// Assert
-	entity.AssertExpectations(t)
 	assert.Error(t, err, "Should throw an error if there is already an account with the name.")
 }
 
 func TestCreateEmptyName(t *testing.T) {
 	// Arrange
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
 	name := ""
-	user := &models.User{}
-	entity := mocksModels.Account{}
+	user := &entities.User{}
+	accountDao := mocks.NewMockAccountDao(mockCtrl)
 
 	// Act
-	err := target.CreateDo(entity, user, name)
+	err := target.CreateDo(accountDao, user, name)
 
 	// Assert
-	entity.AssertExpectations(t)
 	assert.Error(t, err, "Should throw an error if the name is empty.")
 }

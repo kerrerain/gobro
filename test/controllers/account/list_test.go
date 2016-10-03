@@ -1,20 +1,23 @@
 package controllers_account_test
 
 import (
+	"github.com/golang/mock/gomock"
 	target "github.com/magleff/gobro/controllers/account"
-	mocksModels "github.com/magleff/gobro/mocks/models"
-	"github.com/magleff/gobro/models"
+	"github.com/magleff/gobro/entities"
+	"github.com/magleff/gobro/mocks"
 	"testing"
 )
 
 func TestList(t *testing.T) {
 	// Arrange
-	entity := mocksModels.Account{}
-	entity.On("GetAll").Return([]models.Account{})
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	accountDao := mocks.NewMockAccountDao(mockCtrl)
+	accountDao.EXPECT().GetAll().Return([]entities.Account{})
 
 	// Act
-	target.ListDo(entity)
+	target.ListDo(accountDao)
 
 	// Assert
-	entity.AssertExpectations(t)
 }

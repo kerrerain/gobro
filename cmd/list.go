@@ -15,10 +15,10 @@ var listCmd = &cobra.Command{
 
 func ListCmd(cmd *cobra.Command, args []string) {
 	// Manually inject entities
-	ListCmdDo(args, account.Impl{})
+	ListCmdDo(args, account.AccountControllerImpl{})
 }
 
-func ListCmdDo(args []string, accountController account.Controller) {
+func ListCmdDo(args []string, accountController account.AccountController) {
 	accounts := accountController.List()
 	for _, entry := range accounts {
 		fmt.Println(entry.Name)

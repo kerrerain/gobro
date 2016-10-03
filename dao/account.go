@@ -1,27 +1,21 @@
-package models
+package dao
 
 import (
 	"github.com/magleff/gobro/database"
+	"github.com/magleff/gobro/entities"
 	"gopkg.in/mgo.v2/bson"
 )
 
-type AccountEntity interface {
-	GetAll() []Account
-	FindByName(string) (*Account, error)
-	Create(User, Account)
+type AccountDao interface {
+	GetAll() []entities.Account
+	FindByName(string) (*entities.Account, error)
+	Create(entities.User, entities.Account)
 }
 
-type Account struct {
-	ID              bson.ObjectId `bson:"_id,omitempty"`
-	UserId          bson.ObjectId `bson:"userid,omitempty"`
-	CurrentBudgetId bson.ObjectId `bson:"budgetid,omitempty"`
-	Name            string
-	Label           string
-	Active          bool
-}
+type AccountDaoImpl struct{}
 
-func (e Account) GetAll() []Account {
-	var accounts []Account
+func (e AccountDaoImpl) GetAll() []entities.Account {
+	var accounts []entities.Account
 
 	database.ExecuteInSession(func(session database.Session) {
 		session.DefaultSchema().Collection("account").Find(bson.M{}).All(&accounts)
@@ -30,8 +24,8 @@ func (e Account) GetAll() []Account {
 	return accounts
 }
 
-func (e Account) FindByName(name string) (*Account, error) {
-	var account Account
+func (e AccountDaoImpl) FindByName(name string) (*entities.Account, error) {
+	var account entities.Account
 	var err error
 
 	database.ExecuteInSession(func(session database.Session) {
@@ -41,7 +35,7 @@ func (e Account) FindByName(name string) (*Account, error) {
 	return &account, err
 }
 
-func (e Account) Create(user User, account Account) {
+func (e AccountDaoImpl) Create(user entities.User, account entities.Account) {
 	account.UserId = user.ID
 	database.ExecuteInSession(func(session database.Session) {
 		session.DefaultSchema().Collection("account").Insert(account)
