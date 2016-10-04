@@ -5,8 +5,7 @@ import (
 )
 
 type User struct {
-	ID               bson.ObjectId `bson:"_id,omitempty"`
-	CurrentAccountId bson.ObjectId `bson:"accountid,omitempty"`
-	CurrentBudgetId  bson.ObjectId `bson:"budgetid,omitempty"`
-	Name             string
+	ID        bson.ObjectId `bson:"_id,omitempty"`
+	Name      string
+	CliParams CliParams
 }

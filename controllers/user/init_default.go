@@ -2,14 +2,13 @@ package user
 
 import (
 	"github.com/magleff/gobro/common"
-	"github.com/magleff/gobro/dao"
 )
 
-func (c UserControllerImpl) InitDefault() {
+func (c UserControllerImpl) InitDefault() error {
 	// Manually inject entities
-	InitDefaultDo(dao.UserDaoImpl{})
+	return InitDefaultDo(UserControllerImpl{})
 }
 
-func InitDefaultDo(userDao dao.UserDao) {
-	CreateDo(userDao, common.DEFAULT_USER_NAME)
+func InitDefaultDo(userController UserController) error {
+	return userController.Create(common.DEFAULT_USER_NAME)
 }

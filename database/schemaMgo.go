@@ -15,3 +15,7 @@ func (self MgoSchema) Collection(name string) *mgo.Collection {
 func (self MgoSchema) Run(cmd interface{}, result interface{}) error {
 	return self.Schema.Run(cmd, result)
 }
+
+func (self MgoSchema) DropDatabase() error {
+	return self.Schema.DropDatabase()
+}

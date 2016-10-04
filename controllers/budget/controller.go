@@ -2,12 +2,12 @@ package budget
 
 import (
 	"github.com/magleff/gobro/dto"
-	"github.com/magleff/gobro/entities"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type BudgetController interface {
-	ComputeInformation() (*dto.BudgetInformation, error)
-	Current() (*entities.Budget, error)
+	ComputeInformation(accountId bson.ObjectId) (*dto.BudgetInformation, error)
+	Create(accountName string) error
 }
 
 type BudgetControllerImpl struct{}

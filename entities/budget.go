@@ -11,6 +11,7 @@ type Budget struct {
 	AccountId        bson.ObjectId `bson:"accountid,omitempty"`
 	UserId           bson.ObjectId `bson:"userid,omitempty"`
 	StartDate        time.Time
+	EndDate          time.Time
 	LastModification time.Time
 	Expenses         []Expense
 	InitialBalance   decimal.Decimal

@@ -1,17 +1,21 @@
 package budget
 
 import (
+	"github.com/magleff/gobro/dao"
 	"github.com/magleff/gobro/dto"
 	"github.com/magleff/gobro/utils"
+	"gopkg.in/mgo.v2/bson"
 )
 
-func (c BudgetControllerImpl) ComputeInformation() (*dto.BudgetInformation, error) {
-	return ComputeInformationDo(BudgetControllerImpl{})
+func (c BudgetControllerImpl) ComputeInformation(accountId bson.ObjectId) (*dto.BudgetInformation, error) {
+	return ComputeInformationDo(dao.BudgetDaoImpl{}, accountId)
 }
 
-func ComputeInformationDo(controller BudgetController) (*dto.BudgetInformation, error) {
+func ComputeInformationDo(budgetDao dao.BudgetDao,
+	accountId bson.ObjectId) (*dto.BudgetInformation, error) {
+
 	information := new(dto.BudgetInformation)
-	budget, err := controller.Current()
+	budget, err := budgetDao.FindActiveBudget(accountId)
 
 	information.StartDate = budget.StartDate
 	information.InitialBalance = budget.InitialBalance

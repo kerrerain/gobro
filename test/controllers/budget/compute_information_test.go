@@ -7,13 +7,37 @@ import (
 	"github.com/magleff/gobro/mocks"
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
+	"gopkg.in/mgo.v2/bson"
 	"testing"
 )
 
-func TestComputeInformation(t *testing.T) {
+// --- SETUP ---
+
+type ComputeInformationTestSuite struct {
+	suite.Suite
+	MockBudgetDao  *mocks.MockBudgetDao
+	MockController *gomock.Controller
+}
+
+func (suite *ComputeInformationTestSuite) SetupTest() {
+	suite.MockController = gomock.NewController(suite.T())
+	suite.MockBudgetDao = mocks.NewMockBudgetDao(suite.MockController)
+}
+
+func (suite *ComputeInformationTestSuite) TearDownTest() {
+	suite.MockController.Finish()
+}
+
+func TestComputeInformationTestSuite(t *testing.T) {
+	suite.Run(t, new(ComputeInformationTestSuite))
+}
+
+// --- TESTS ---
+
+func (suite *CreateTestSuite) TestComputeInformation() {
 	// Arrange
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
+	accountId := bson.NewObjectId()
 
 	currentBudget := &entities.Budget{}
 	currentBudget.InitialBalance = decimal.NewFromFloat(1114.25)
@@ -24,25 +48,24 @@ func TestComputeInformation(t *testing.T) {
 		entities.Expense{Amount: decimal.NewFromFloat(-18.36), Checked: false},
 	}
 
-	budgetController := mocks.NewMockBudgetController(mockCtrl)
-	budgetController.EXPECT().Current().Return(currentBudget, nil)
+	suite.MockBudgetDao.EXPECT().FindActiveBudget(accountId).Return(currentBudget, nil)
 
 	// Act
-	information, _ := target.ComputeInformationDo(budgetController)
+	information, _ := target.ComputeInformationDo(suite.MockBudgetDao, accountId)
 
 	// Assert
-	assert.Equal(t, decimal.NewFromFloat(-49.04), information.TotalExpenses,
+	assert.Equal(suite.T(), decimal.NewFromFloat(-49.04), information.TotalExpenses,
 		"Should compute the total of expenses.")
-	assert.Equal(t, decimal.NewFromFloat(30.56), information.TotalEarnings,
+	assert.Equal(suite.T(), decimal.NewFromFloat(30.56), information.TotalEarnings,
 		"Should compute the total of earnings.")
-	assert.Equal(t, decimal.NewFromFloat(-18.36), information.TotalUncheckedExpenses,
+	assert.Equal(suite.T(), decimal.NewFromFloat(-18.36), information.TotalUncheckedExpenses,
 		"Should compute the total of unchecked expenses.")
-	assert.Equal(t, decimal.NewFromFloat(1114.25), information.InitialBalance,
+	assert.Equal(suite.T(), decimal.NewFromFloat(1114.25), information.InitialBalance,
 		"Should copy the initial balance.")
-	assert.Equal(t, currentBudget.StartDate, information.StartDate,
+	assert.Equal(suite.T(), currentBudget.StartDate, information.StartDate,
 		"Should copy the start date.")
-	assert.Equal(t, decimal.NewFromFloat(-18.48), information.Difference,
+	assert.Equal(suite.T(), decimal.NewFromFloat(-18.48), information.Difference,
 		"Should compute the difference.")
-	assert.Equal(t, decimal.NewFromFloat(1095.77), information.CurrentBalance,
+	assert.Equal(suite.T(), decimal.NewFromFloat(1095.77), information.CurrentBalance,
 		"Should compute the current balance.")
 }

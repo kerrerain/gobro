@@ -7,12 +7,50 @@ import (
 )
 
 type AccountDao interface {
+	// Generic
+	Create(entities.Account)
+	Update(account entities.Account) error
+	Delete(account entities.Account) error
+	FindById(accountId bson.ObjectId) (*entities.Account, error)
+	// Specific
 	GetAll() []entities.Account
-	FindByName(string) (*entities.Account, error)
-	Create(entities.User, entities.Account)
+	FindByName(userId bson.ObjectId, name string) (*entities.Account, error)
 }
 
 type AccountDaoImpl struct{}
+
+func (e AccountDaoImpl) Create(account entities.Account) {
+	database.ExecuteInSession(func(session database.Session) {
+		session.DefaultSchema().Collection("account").Insert(account)
+	})
+}
+
+func (e AccountDaoImpl) Update(account entities.Account) error {
+	var err error
+	database.ExecuteInSession(func(session database.Session) {
+		err = session.DefaultSchema().Collection("account").UpdateId(account.ID, account)
+	})
+	return err
+}
+
+func (e AccountDaoImpl) Delete(account entities.Account) error {
+	var err error
+	database.ExecuteInSession(func(session database.Session) {
+		err = session.DefaultSchema().Collection("account").RemoveId(account.ID)
+	})
+	return err
+}
+
+func (e AccountDaoImpl) FindById(accountId bson.ObjectId) (*entities.Account, error) {
+	var account entities.Account
+	var err error
+
+	database.ExecuteInSession(func(session database.Session) {
+		err = session.DefaultSchema().Collection("account").FindId(accountId).One(&account)
+	})
+
+	return &account, err
+}
 
 func (e AccountDaoImpl) GetAll() []entities.Account {
 	var accounts []entities.Account
@@ -24,20 +62,14 @@ func (e AccountDaoImpl) GetAll() []entities.Account {
 	return accounts
 }
 
-func (e AccountDaoImpl) FindByName(name string) (*entities.Account, error) {
+func (e AccountDaoImpl) FindByName(userId bson.ObjectId, name string) (*entities.Account, error) {
 	var account entities.Account
 	var err error
 
 	database.ExecuteInSession(func(session database.Session) {
-		err = session.DefaultSchema().Collection("account").Find(bson.M{"name": name}).One(&account)
+		err = session.DefaultSchema().Collection("account").
+			Find(bson.M{"name": name, "userid": userId}).One(&account)
 	})
 
 	return &account, err
-}
-
-func (e AccountDaoImpl) Create(user entities.User, account entities.Account) {
-	account.UserId = user.ID
-	database.ExecuteInSession(func(session database.Session) {
-		session.DefaultSchema().Collection("account").Insert(account)
-	})
 }
