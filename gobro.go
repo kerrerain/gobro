@@ -11,7 +11,7 @@ import (
 func main() {
 	database.InitDatabase()
 
-	// Inits a default user (only if it hasn't been created yet)
+	// Init a default user if it does not exist yet
 	user.UserControllerImpl{}.InitDefault()
 
 	// Close the database's main session after running the command

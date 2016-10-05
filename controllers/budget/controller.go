@@ -7,7 +7,7 @@ import (
 
 type BudgetController interface {
 	ComputeInformation(accountId bson.ObjectId) (*dto.BudgetInformation, error)
-	Create(accountName string) error
+	Create(userId bson.ObjectId, accountId bson.ObjectId) error
 }
 
 type BudgetControllerImpl struct{}

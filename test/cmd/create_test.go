@@ -41,15 +41,22 @@ func TestCreateCmdTestSuite(t *testing.T) {
 
 func (suite *CreateCmdTestSuite) TestCreateCmdNoType() {
 	// Arrange
-	user := &entities.User{
-		ID: bson.NewObjectId(),
-	}
-
 	// Act
-	err := cmd.CreateCmdDo([]string{}, suite.MockAccountController, user)
+	err := cmd.CreateCmdDo([]string{}, suite.MockAccountController,
+		suite.MockBudgetController, &entities.User{})
 
 	// Assert
 	assert.Error(suite.T(), err, "Should throw an error if the type is not provided.")
+}
+
+func (suite *CreateCmdTestSuite) TestCreateUnknownType() {
+	// Arrange
+	// Act
+	err := cmd.CreateCmdDo([]string{"bhjiabhuebhudbhuxbhu"}, suite.MockAccountController,
+		suite.MockBudgetController, &entities.User{})
+
+	// Assert
+	assert.Error(suite.T(), err, "Should throw an error if the type is unknown.")
 }
 
 func (suite *CreateCmdTestSuite) TestCreateAccountCmd() {
@@ -63,7 +70,7 @@ func (suite *CreateCmdTestSuite) TestCreateAccountCmd() {
 
 	// Act
 	err := cmd.CreateCmdDo([]string{common.TYPE_ACCOUNT, accountName},
-		suite.MockAccountController, user)
+		suite.MockAccountController, suite.MockBudgetController, user)
 
 	// Assert
 	assert.NoError(suite.T(), err, "Should not throw an error.")
@@ -71,28 +78,30 @@ func (suite *CreateCmdTestSuite) TestCreateAccountCmd() {
 
 func (suite *CreateCmdTestSuite) TestCreateAccountNoName() {
 	// Arrange
-	user := &entities.User{
-		ID: bson.NewObjectId(),
-	}
-
 	// Act
-	err := cmd.CreateCmdDo([]string{common.TYPE_ACCOUNT}, suite.MockAccountController, user)
+	err := cmd.CreateCmdDo([]string{common.TYPE_ACCOUNT}, suite.MockAccountController,
+		suite.MockBudgetController, &entities.User{})
 
 	// Assert
 	assert.Error(suite.T(), err, "Should throw an error if the name of the account is not provided.")
 }
 
-// func (suite *CreateCmdTestSuite) TestCreateBudgetCmd() {
-// 	// Arrange
-// 	user := &entities.User{
-// 		ID: bson.NewObjectId(),
-// 	}
+func (suite *CreateCmdTestSuite) TestCreateBudgetCmd() {
+	// Arrange
+	user := &entities.User{
+		ID: bson.NewObjectId(),
+		CliParams: entities.CliParams{
+			CurrentAccountId: bson.NewObjectId(),
+		},
+	}
 
-// 	suite.MockBudgetController.EXPECT().Create(user.ID).Return(nil)
+	suite.MockBudgetController.EXPECT().
+		Create(user.ID, user.CliParams.CurrentAccountId).Return(nil)
 
-// 	// Act
-// 	err := cmd.CreateCmdDo([]string{common.TYPE_BUDGET}, suite.MockBudgetController, user)
+	// Act
+	err := cmd.CreateCmdDo([]string{common.TYPE_BUDGET}, suite.MockAccountController,
+		suite.MockBudgetController, user)
 
-// 	// Assert
-// 	assert.NoError(suite.T(), err, "Should not throw an error.")
-// }
+	// Assert
+	assert.NoError(suite.T(), err, "Should not throw an error.")
+}
