@@ -6,7 +6,7 @@ import (
 )
 
 type AccountController interface {
-	List() []entities.Account
+	List(userId bson.ObjectId) ([]entities.Account, error)
 	Create(userId bson.ObjectId, accountName string) error
 }
 

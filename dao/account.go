@@ -13,7 +13,7 @@ type AccountDao interface {
 	Delete(account entities.Account) error
 	FindById(accountId bson.ObjectId) (*entities.Account, error)
 	// Specific
-	GetAll() []entities.Account
+	GetAll(userId bson.ObjectId) ([]entities.Account, error)
 	FindByName(userId bson.ObjectId, name string) (*entities.Account, error)
 }
 
@@ -52,14 +52,15 @@ func (e AccountDaoImpl) FindById(accountId bson.ObjectId) (*entities.Account, er
 	return &account, err
 }
 
-func (e AccountDaoImpl) GetAll() []entities.Account {
+func (e AccountDaoImpl) GetAll(userId bson.ObjectId) ([]entities.Account, error) {
 	var accounts []entities.Account
+	var err error
 
 	database.ExecuteInSession(func(session database.Session) {
-		session.DefaultSchema().Collection("account").Find(bson.M{}).All(&accounts)
+		session.DefaultSchema().Collection("account").Find(bson.M{"userid": userId}).All(&accounts)
 	})
 
-	return accounts
+	return accounts, err
 }
 
 func (e AccountDaoImpl) FindByName(userId bson.ObjectId, name string) (*entities.Account, error) {

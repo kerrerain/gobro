@@ -18,7 +18,6 @@ type CreateCmdTestSuite struct {
 	suite.Suite
 	MockAccountController *mocks.MockAccountController
 	MockBudgetController  *mocks.MockBudgetController
-	MockUserSession       *mocks.MockUserSession
 	MockController        *gomock.Controller
 }
 
@@ -26,7 +25,6 @@ func (suite *CreateCmdTestSuite) SetupTest() {
 	suite.MockController = gomock.NewController(suite.T())
 	suite.MockAccountController = mocks.NewMockAccountController(suite.MockController)
 	suite.MockBudgetController = mocks.NewMockBudgetController(suite.MockController)
-	suite.MockUserSession = mocks.NewMockUserSession(suite.MockController)
 }
 
 func (suite *CreateCmdTestSuite) TearDownTest() {
