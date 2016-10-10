@@ -1,37 +1,61 @@
 package cmd
 
-// import (
-// 	"errors"
-// 	"github.com/magleff/gobro/controllers"
-// 	"github.com/spf13/cobra"
-// )
+import (
+	"fmt"
+	"github.com/magleff/gobro/controllers/budget"
+	"github.com/magleff/gobro/dao"
+	"github.com/magleff/gobro/dto"
+	"github.com/magleff/gobro/entities"
+	"github.com/magleff/gobro/session"
+	"github.com/spf13/cobra"
+)
 
-// var statusCmd = &cobra.Command{
-// 	Use:   "status",
-// 	Short: "Gives the status of the current budget",
-// 	Long:  `Gives the status of the current budget`,
-// 	RunE:  RunStatusCmd,
-// }
+var statusCmd = &cobra.Command{
+	Use:   "status",
+	Short: "Gives the status of the current budget",
+	Long:  `Gives the status of the current budget`,
+	RunE:  StatusCmd,
+}
 
-// func RunStatusCmd(cmd *cobra.Command, args []string) error {
-// 	return StatusCmd(args, controllers.Budget{})
-// }
+func StatusCmd(cmd *cobra.Command, args []string) error {
+	// Init a session for the user
+	session.InitUserSession()
+	// Manually inject entities
+	return StatusCmdDo(args, dao.AccountDaoImpl{}, budget.BudgetControllerImpl{},
+		session.GetSession().GetUser())
+}
 
-// func StatusCmd(args []string, budgetController controllers.Budget) error {
-// 	var err error
+func StatusCmdDo(args []string, accountDao dao.AccountDao,
+	budgetController budget.BudgetController, user *entities.User) error {
 
-// 	budget := budgetController.GetCurrent()
+	account, err := accountDao.FindById(user.CliParams.CurrentAccountId)
 
-// 	if budget != nil {
-// 		//budget.Display()
-// 	} else {
-// 		err = errors.New("There is not any active budget. " +
-// 			"use 'open budget' to open a new budget.")
-// 	}
+	if err != nil {
+		return err
+	}
 
-// 	return err
-// }
+	fmt.Println("On account", account.Name)
 
-// func init() {
-// 	RootCmd.AddCommand(statusCmd)
-// }
+	budgetInfo, errInfo := budgetController.ComputeInformation(user.CliParams.CurrentAccountId)
+
+	if errInfo != nil {
+		return errInfo
+	}
+
+	displayBudgetInfos(budgetInfo)
+
+	return nil
+}
+
+func displayBudgetInfos(budgetInfo *dto.BudgetInformation) {
+	fmt.Println("Created on", budgetInfo.StartDate)
+	fmt.Println("Initial balance", budgetInfo.InitialBalance)
+	fmt.Println("Total earnings", budgetInfo.TotalEarnings)
+	fmt.Println("Total expenses", budgetInfo.TotalExpenses)
+	fmt.Println("Total unchecked expenses", budgetInfo.TotalUncheckedExpenses)
+	fmt.Println("Balance", budgetInfo.CurrentBalance.String(), "("+budgetInfo.Difference.String()+")")
+}
+
+func init() {
+	RootCmd.AddCommand(statusCmd)
+}
